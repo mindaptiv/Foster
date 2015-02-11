@@ -40,6 +40,17 @@ struct cylonStruct
 	std::wstring				wUsername;		//TODO convert to UTF8?
 	std::wstring				wDeviceName;		//TODO convert to UTF8?
 
+	//processor
+	unsigned short				architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
+	unsigned short				processorLevel; //architecture-dependent processor level
+	unsigned long				pageSize;  //size of page 
+	unsigned long				processorCount; //number of processors
+	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated
+	void*						minAppAddress; //lowest point in memory an application can access 
+	void*						maxAppAddress; //highest point in memory an app can access
+
+
+
 	//utf8
 	//std::string	
 
@@ -81,6 +92,7 @@ void		produceDeviceName(struct cylonStruct& tf);
 //for getting processor info
 void		produceProcessorInfo(struct cylonStruct& tf);
 
+//Constructor
 //build tory
 struct cylonStruct buildTory();
 //End methods declaration

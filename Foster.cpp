@@ -217,33 +217,6 @@ void produceDeviceName(struct cylonStruct& tory)
 	//cleanup WSA
 	WSACleanup();
 
-	/*
-	//one is for debugging purposes only so break points don't get skipped
-	int one;
-	if (error == WSAEFAULT)
-	{
-		one = 1 + 0;
-	}
-	else if (error == WSANOTINITIALISED)
-	{
-		one = 1 + 1;
-	}
-	else if (error == WSAENETDOWN)
-	{
-		one = 1 + 2;
-	}
-	else if (error = WSAEINPROGRESS)
-	{
-		one = 1 + 3;
-	}
-	else
-	{
-		one = 1 + 4;
-	}
-	//end if
-	//end debug
-	*/
-
 	//convert string to wstring
 	size_needed = MultiByteToWideChar(CP_UTF8, 0, &deviceName[0], (int)deviceName.size(), NULL, 0);
 	std::wstring wDeviceName(size_needed, 0);
@@ -259,6 +232,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 {
 	//Variable Declaration
 	SYSTEM_INFO sysinfo;
+	unsigned int architecture;
 
 	//Grab system info
 	GetNativeSystemInfo(&sysinfo);
@@ -269,12 +243,55 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	one = one * 9;
 	//end test
 	
-	//TODO convert Dwords and words into numerated values
-	
+	//Convert results into local values
+	//Convert architecture
+	if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+	{
+		//x64 (AMD or Intel)
+		architecture = 1;
+	}
+	else if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM)
+	{
+		//ARM
+		architecture = 2;
+	}
+	else if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64)
+	{
+		//Intel Itanium-based
+		architecture = 3;
+	}
+	else if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL)
+	{
+		//x86
+		architecture = 4;
+	}
+	else
+	{
+		//unknown error
+		architecture = 0;
+	}
+	//end if
 
+	//set tory architecture
+	tf.architecture = architecture;
+
+	//set tory page size
+	tf.pageSize = (unsigned long)sysinfo.dwPageSize;
+
+	//set the min and max pointers for apps
+	tf.minAppAddress = (void*)sysinfo.lpMinimumApplicationAddress;
+	tf.maxAppAddress = (void*)sysinfo.lpMaximumApplicationAddress;
+
+	//set the number of processors
+	tf.processorCount = (unsigned long)sysinfo.dwNumberOfProcessors;
+
+	//set allocation granularity
+	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
+	
 }
 //end produce processor info
 
+//Constructor
 //build Tory
 struct cylonStruct buildTory()
 {
