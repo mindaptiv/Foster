@@ -254,6 +254,27 @@ void produceDeviceName(struct cylonStruct& tory)
 }
 //end produceDeviceName
 
+//for getting processor info
+void produceProcessorInfo(struct cylonStruct& tf)
+{
+	//Variable Declaration
+	SYSTEM_INFO sysinfo;
+
+	//Grab system info
+	GetNativeSystemInfo(&sysinfo);
+
+	//test
+	int one = 9;
+
+	one = one * 9;
+	//end test
+	
+	//TODO convert Dwords and words into numerated values
+	
+
+}
+//end produce processor info
+
 //build Tory
 struct cylonStruct buildTory()
 {
@@ -272,6 +293,9 @@ struct cylonStruct buildTory()
 	//date and time
 	produceDateTime(tory);
 
+	//processor
+	produceProcessorInfo(tory);
+	
 	//TODO add more host queries
 
 

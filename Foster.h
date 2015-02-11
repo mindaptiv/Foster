@@ -78,6 +78,9 @@ void		produceDateTime(struct cylonStruct& tf);
 //for getting device name
 void		produceDeviceName(struct cylonStruct& tf);
 
+//for getting processor info
+void		produceProcessorInfo(struct cylonStruct& tf);
+
 //build tory
 struct cylonStruct buildTory();
 //End methods declaration
