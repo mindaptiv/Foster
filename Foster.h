@@ -43,13 +43,14 @@ struct cylonStruct
 	//processor
 	unsigned short				architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
 	unsigned short				processorLevel; //architecture-dependent processor level
-	unsigned long				pageSize;  //size of page 
+	unsigned long				pageSize;  //size of page in bytes
 	unsigned long				processorCount; //number of processors
-	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated
+	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
 	void*						minAppAddress; //lowest point in memory an application can access 
 	void*						maxAppAddress; //highest point in memory an app can access
+	//TODO get hz?
 
-
+	//TODO get memory information
 
 	//utf8
 	//std::string	
@@ -76,6 +77,14 @@ unsigned int getFosterDST(struct cylonStruct tf);
 std::wstring getFosterTimeZoneName(struct cylonStruct tf);
 std::wstring getFosterUsername(struct cylonStruct tf);
 std::wstring getFosterDeviceName(struct cylonStruct tf);
+unsigned short getFosterArchitecture(struct cylonStruct tf); 
+unsigned short getFosterProcessorLevel(struct cylonStruct tf); 
+unsigned long	getFosterPageSize(struct cylonStruct tf);  
+unsigned long	getFosterProcessorCount(struct cylonStruct tf); 
+unsigned long	getFosterAllocationGranularity(struct cylonStruct tf); 
+void*			getFosterMinAppAddress(struct cylonStruct tf); 
+void*			getFosterMaxAppAddress(struct cylonStruct tf); 
+
 
 //for getting username
 void		produceUsername(struct cylonStruct& tf);
@@ -91,6 +100,9 @@ void		produceDeviceName(struct cylonStruct& tf);
 
 //for getting processor info
 void		produceProcessorInfo(struct cylonStruct& tf);
+
+//for getting memory info
+void		produceMemoryInfo(struct cylonStruct& tf);
 
 //Constructor
 //build tory

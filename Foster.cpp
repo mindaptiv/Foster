@@ -92,7 +92,51 @@ std::wstring getFosterDeviceName(struct cylonStruct tf)
 	//return
 	return tf.wDeviceName;
 }
+
+unsigned short getFosterArchitecture(struct cylonStruct tf)
+{
+	//return
+	return tf.architecture;
+}
+
+unsigned short getFosterProcessorLevel(struct cylonStruct tf)
+{
+	//return
+	return tf.processorLevel;
+}
+
+unsigned long getFosterPageSize(struct cylonStruct tf)
+{
+	//return
+	return tf.pageSize;
+}
+
+unsigned long getFosterProcessorCount(struct cylonStruct tf)
+{
+	//return
+	return tf.processorCount;
+}
+
+unsigned long getFosterAllocationGranularity(struct cylonStruct tf)
+{
+	//return
+	return tf.allocationGranularity;
+}
+
+void* getFosterMinAppAddress(struct cylonStruct tf)
+{
+	//return
+	return tf.minAppAddress;
+}
+
+void* getFosterMaxAppAddress(struct cylonStruct tf)
+{
+	//return 
+	return tf.maxAppAddress;
+}
 //end getters
+
+
 
 //for getting username
 void produceUsername(struct cylonStruct& tory)
@@ -287,9 +331,15 @@ void produceProcessorInfo(struct cylonStruct& tf)
 
 	//set allocation granularity
 	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
-	
 }
 //end produce processor info
+
+//for getting memory info
+void		produceMemoryInfo(struct cylonStruct& tf)
+{
+	
+}
+//end produceMemoryInfo
 
 //Constructor
 //build Tory
