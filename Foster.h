@@ -52,6 +52,10 @@ struct cylonStruct
 
 	//TODO get memory information
 
+	//account picture
+	Windows::Storage::IStorageFile^ picture;
+	std::wstring				pictureType;
+
 	//utf8
 	//std::string	
 
@@ -84,6 +88,8 @@ unsigned long	getFosterProcessorCount(struct cylonStruct tf);
 unsigned long	getFosterAllocationGranularity(struct cylonStruct tf); 
 void*			getFosterMinAppAddress(struct cylonStruct tf); 
 void*			getFosterMaxAppAddress(struct cylonStruct tf); 
+std::wstring getFosterPictureType(struct cylonStruct tf);
+Windows::Storage::IStorageFile^ getFosterPictureFile(struct cylonStruct tf);
 
 
 //for getting username
@@ -103,6 +109,9 @@ void		produceProcessorInfo(struct cylonStruct& tf);
 
 //for getting memory info
 void		produceMemoryInfo(struct cylonStruct& tf);
+
+//for getting account picture
+void		produceAccountPicture(struct cylonStruct& tf);
 
 //Constructor
 //build tory

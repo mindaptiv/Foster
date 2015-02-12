@@ -134,6 +134,19 @@ void* getFosterMaxAppAddress(struct cylonStruct tf)
 	//return 
 	return tf.maxAppAddress;
 }
+
+std::wstring getFosterPictureType(struct cylonStruct tf)
+{
+	//return
+	return tf.pictureType;
+
+}
+
+Windows::Storage::IStorageFile^ getFosterPictureFile(struct cylonStruct tf)
+{
+	//return 
+	return tf.picture;
+}
 //end getters
 
 
@@ -331,15 +344,42 @@ void produceProcessorInfo(struct cylonStruct& tf)
 
 	//set allocation granularity
 	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
+
+	//TODO grab hertz
 }
 //end produce processor info
 
 //for getting memory info
-void		produceMemoryInfo(struct cylonStruct& tf)
+void produceMemoryInfo(struct cylonStruct& tf)
 {
-	
+	//TODO get memory	
 }
 //end produceMemoryInfo
+
+//for getting account picture
+void produceAccountPicture(struct cylonStruct& tf)
+{
+	//variable declaration
+	Windows::System::UserProfile::AccountPictureKind kind = Windows::System::UserProfile::AccountPictureKind::SmallImage;
+	Windows::Storage::IStorageFile^ picture;
+	std::wstring pictureType;
+	const wchar_t* typeDataPointer;
+
+	//retrieve picture
+	picture = Windows::System::UserProfile::UserInformation::GetAccountPicture(kind);
+
+	//set picture
+	tf.picture = picture;
+
+	//convert picture type to wstring
+	typeDataPointer = picture->FileType->Data();
+	pictureType = std::wstring(typeDataPointer);
+
+	//set picture type
+	tf.pictureType = pictureType;
+}
+//end produceAccountPicture
+
 
 //Constructor
 //build Tory
@@ -363,6 +403,9 @@ struct cylonStruct buildTory()
 	//processor
 	produceProcessorInfo(tory);
 	
+	//picture
+	produceAccountPicture(tory);
+
 	//TODO add more host queries
 
 
