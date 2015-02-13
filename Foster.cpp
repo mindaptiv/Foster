@@ -293,12 +293,6 @@ void produceProcessorInfo(struct cylonStruct& tf)
 
 	//Grab system info
 	GetNativeSystemInfo(&sysinfo);
-
-	//test
-	int one = 9;
-
-	one = one * 9;
-	//end test
 	
 	//Convert results into local values
 	//Convert architecture
