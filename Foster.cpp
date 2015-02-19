@@ -346,7 +346,10 @@ void produceProcessorInfo(struct cylonStruct& tf)
 //for getting memory info
 void produceMemoryInfo(struct cylonStruct& tf)
 {
-	//TODO get memory	
+	//return the minimum supported by the OS
+	tf.memoryBytes = 1000000000;
+
+	//TODO update when WinRT, etc. supports retrieving RAM information from a device
 }
 //end produceMemoryInfo
 
@@ -374,6 +377,37 @@ void produceAccountPicture(struct cylonStruct& tf)
 }
 //end produceAccountPicture
 
+//for getting attached devices
+void produceDeviceInformation(struct cylonStruct& tf)
+{
+	//Variable Declaration
+	Windows::Foundation::IAsyncOperation<Windows::Devices::Enumeration::DeviceInformationCollection^>^ operation;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ devices;
+	Windows::Devices::Enumeration::DeviceClass deviceType = Windows::Devices::Enumeration::DeviceClass::AudioRender;
+	Windows::Devices::Enumeration::DeviceInformation^ firstDevice;
+
+	//Grab devices collection
+	operation = Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(deviceType);
+	
+	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
+	{
+		//WAIT, YO
+	}
+	
+	//get the results and close the operation
+	devices = operation->GetResults();
+	operation->Close();
+
+	//retrieve the number of devices detected
+	tf.deviceCount = devices->Size;
+
+	//grab the first device in the collection
+	firstDevice = devices->GetAt(0);
+
+	//TODO store devices
+}
+//end produceDeviceInformation
+
 
 //Constructor
 //build Tory
@@ -399,6 +433,12 @@ struct cylonStruct buildTory()
 	
 	//picture
 	produceAccountPicture(tory);
+
+	//devices
+	produceDeviceInformation(tory);
+
+	//memory
+	produceMemoryInfo(tory);
 
 	//TODO add more host queries
 

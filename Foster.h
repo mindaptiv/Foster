@@ -50,11 +50,27 @@ struct cylonStruct
 	void*						maxAppAddress; //highest point in memory an app can access
 	//TODO get hz?
 
-	//TODO get memory information
+	//memory
+	uint64		memoryBytes;
 
 	//account picture
 	Windows::Storage::IStorageFile^ picture;
 	std::wstring				pictureType;
+
+	//devices
+	unsigned int deviceCount;
+	unsigned int portableStorageCount;
+	unsigned int videoCount;
+	unsigned int micCount;
+	unsigned int speakerCount;
+	unsigned int locationCount;
+	unsigned int scannerCount;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ portableStorageDevices;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ audioCaptureDevices;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ audioRenderDevices;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ videoCaptureDevices;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ imageScannerDevices;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ locationAwareDevices;
 
 	//utf8
 	//std::string	
@@ -112,6 +128,9 @@ void		produceMemoryInfo(struct cylonStruct& tf);
 
 //for getting account picture
 void		produceAccountPicture(struct cylonStruct& tf);
+
+//for getting attached devices
+void		produceDeviceInformation(struct cylonStruct& tf);
 
 //Constructor
 //build tory
