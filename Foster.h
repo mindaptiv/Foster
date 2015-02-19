@@ -58,13 +58,15 @@ struct cylonStruct
 	std::wstring				pictureType;
 
 	//devices
-	unsigned int deviceCount;
+	unsigned int installedDeviceCount;
+	unsigned int detectedDeviceCount;
 	unsigned int portableStorageCount;
 	unsigned int videoCount;
 	unsigned int micCount;
 	unsigned int speakerCount;
 	unsigned int locationCount;
 	unsigned int scannerCount;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ installedDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ portableStorageDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ audioCaptureDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ audioRenderDevices;
@@ -131,6 +133,8 @@ void		produceAccountPicture(struct cylonStruct& tf);
 
 //for getting attached devices
 void		produceDeviceInformation(struct cylonStruct& tf);
+void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
+void		produceDeviceTypesInformation(struct cylonStruct& tf);
 
 //Constructor
 //build tory

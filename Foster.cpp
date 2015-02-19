@@ -377,17 +377,15 @@ void produceAccountPicture(struct cylonStruct& tf)
 }
 //end produceAccountPicture
 
-//for getting attached devices
+//for getting all installed devices
 void produceDeviceInformation(struct cylonStruct& tf)
 {
 	//Variable Declaration
 	Windows::Foundation::IAsyncOperation<Windows::Devices::Enumeration::DeviceInformationCollection^>^ operation;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ devices;
-	Windows::Devices::Enumeration::DeviceClass deviceType = Windows::Devices::Enumeration::DeviceClass::AudioRender;
-	Windows::Devices::Enumeration::DeviceInformation^ firstDevice;
 
-	//Grab devices collection
-	operation = Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(deviceType);
+	//Grab devices
+	operation = Windows::Devices::Enumeration::DeviceInformation::FindAllAsync();
 	
 	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
 	{
@@ -398,16 +396,131 @@ void produceDeviceInformation(struct cylonStruct& tf)
 	devices = operation->GetResults();
 	operation->Close();
 
-	//retrieve the number of devices detected
-	tf.deviceCount = devices->Size;
+	//store the collection and size
+	tf.installedDeviceCount	= devices->Size;
+	tf.installedDevices		= devices;
 
-	//grab the first device in the collection
-	firstDevice = devices->GetAt(0);
-
-	//TODO store devices
+	//TODO store/convert devices
 }
 //end produceDeviceInformation
 
+void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
+{
+	//Variable Declaration
+	Windows::Foundation::IAsyncOperation<Windows::Devices::Enumeration::DeviceInformationCollection^>^ operation;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ devices;
+	Windows::Devices::Enumeration::DeviceClass deviceType; // = Windows::Devices::Enumeration::DeviceClass::AudioRender;
+
+	//set deviceType operation filter based on type string
+	if (type == "all" || type == "All")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::All;
+	}
+	else if (type == "AudioCapture" || type == "audioCapture")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::AudioCapture;
+	}
+	else if (type == "AudioRender" || type == "audioRender")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::AudioRender;
+	}
+	else if (type == "PortableStorageDevice" || type == "portableStorageDevice")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::PortableStorageDevice;
+	}
+	else if (type == "VideoCapture" || type == "videoCapture")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::VideoCapture;
+	}
+	else if (type == "ImageScanner" || type == "imageScanner")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::ImageScanner;
+	}
+	else if (type == "Location" || type == "location")
+	{
+		deviceType = Windows::Devices::Enumeration::DeviceClass::Location;
+	}
+	else
+	{
+		//"Hey... You ever wonder why we're here?" - Simmons
+		//ERROR case, default to all
+		deviceType = Windows::Devices::Enumeration::DeviceClass::All;
+	}
+
+	//Grab devices collection for audio rendering
+	operation = Windows::Devices::Enumeration::DeviceInformation::FindAllAsync(deviceType);
+
+	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
+	{
+		//WAIT, YO
+	}
+
+	//get the results and close the operation
+	devices = operation->GetResults();
+	operation->Close();
+
+	//store results in tory based on type string
+	if (type == "all" || type == "All")
+	{
+		tf.installedDevices = devices;
+		tf.installedDeviceCount		= devices->Size;
+	}
+	else if (type == "AudioCapture" || type == "audioCapture")
+	{
+		tf.audioCaptureDevices	= devices;
+		tf.micCount				= devices->Size;
+	}
+	else if (type == "AudioRender" || type == "audioRender")
+	{
+		tf.audioRenderDevices	= devices;
+		tf.speakerCount			= devices->Size;
+	}
+	else if (type == "PortableStorageDevice" || type == "portableStorageDevice")
+	{
+		tf.portableStorageDevices	= devices;
+		tf.portableStorageCount		= devices->Size;
+	}
+	else if (type == "VideoCapture" || type == "videoCapture")
+	{
+		tf.videoCaptureDevices	= devices;
+		tf.videoCount			= devices->Size;
+	}
+	else if (type == "ImageScanner" || type == "imageScanner")
+	{
+		tf.imageScannerDevices	= devices;
+		tf.scannerCount			= devices->Size;
+	}
+	else if (type == "Location" || type == "location")
+	{
+		tf.locationAwareDevices = devices;
+		tf.locationCount		= devices->Size;
+	}
+	else
+	{
+		//"Hey... You ever wonder why we're here?" - Simmons
+		//ERROR case, default to all
+		tf.installedDevices = devices;
+		tf.installedDeviceCount = devices->Size;
+	}
+
+	//TODO store/convert devices
+}
+
+//produces device information for all types except the "all" filter
+//for "all" use produceDeviceInformation
+void produceDeviceTypesInformation(struct cylonStruct& tf)
+{
+	//Grab collections and counts
+	produceDeviceTypeInformation(tf, "AudioCapture");
+	produceDeviceTypeInformation(tf, "AudioRender");
+	produceDeviceTypeInformation(tf, "Location");
+	produceDeviceTypeInformation(tf, "ImageScanner");
+	produceDeviceTypeInformation(tf, "VideoCapture");
+	produceDeviceTypeInformation(tf, "PortableStorageDevice");
+
+	//Grab total count
+	tf.detectedDeviceCount = tf.micCount + tf.speakerCount + tf.locationCount + tf.scannerCount + tf.videoCount + tf.portableStorageCount;
+}
 
 //Constructor
 //build Tory
@@ -435,7 +548,7 @@ struct cylonStruct buildTory()
 	produceAccountPicture(tory);
 
 	//devices
-	produceDeviceInformation(tory);
+	produceDeviceTypesInformation(tory);
 
 	//memory
 	produceMemoryInfo(tory);
