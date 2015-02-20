@@ -522,7 +522,7 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	tf.detectedDeviceCount = tf.micCount + tf.speakerCount + tf.locationCount + tf.scannerCount + tf.videoCount + tf.portableStorageCount;
 }
 
-//Constructor
+//Constructors
 //build Tory
 struct cylonStruct buildTory()
 {
@@ -560,3 +560,11 @@ struct cylonStruct buildTory()
 	return tory;
 }
 //end build tory
+
+//build a device struct with given data
+struct deviceStruct buildDevice()
+{
+
+}
+//END build device
+//END constructors

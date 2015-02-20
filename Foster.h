@@ -1,12 +1,12 @@
 //Foster.h 
 //Defines functionality for Foster service.  Retrieves system details from Windows 8.1 using a combination of Windows Store API calls and legacy Win32 API calls.
-//"Bad becomes good" - Tory Foster
+//"Bad becomes good," - Tory Foster
 //josh@mindaptiv.com
 
 #pragma once
 
 //includes
-#include <string>
+#include "Cylon.h"
 
 //includes for windows functionality
 #include <Windows.h>
@@ -15,73 +15,6 @@
 
 #define cylon_username__max_Utf8_k 128
 #define cylon_deviceName__max_Utf8_k 192
-
-//struct definition for storing data for later use
-struct cylonStruct
-{
-	//time
-	unsigned int				milliseconds;
-	unsigned int				seconds;
-	unsigned int				minutes;
-	unsigned int				hours;
-
-	//date
-	unsigned int				day; //day of the week, 0-6
-	unsigned int				date; //1-31
-	unsigned int				month; //1-12
-	unsigned int				year; //1601 until the cows come home
-	
-	//timezone
-	unsigned int				dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
-	long						timeZone;		//expressed in minutes +/- UTC
-	std::wstring				wTimeZoneName;	
-
-	//names
-	std::wstring				wUsername;		//TODO convert to UTF8?
-	std::wstring				wDeviceName;		//TODO convert to UTF8?
-
-	//processor
-	unsigned short				architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
-	unsigned short				processorLevel; //architecture-dependent processor level
-	unsigned long				pageSize;  //size of page in bytes
-	unsigned long				processorCount; //number of processors
-	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
-	void*						minAppAddress; //lowest point in memory an application can access 
-	void*						maxAppAddress; //highest point in memory an app can access
-	//TODO get hz?
-
-	//memory
-	uint64		memoryBytes;
-
-	//account picture
-	Windows::Storage::IStorageFile^ picture;
-	std::wstring				pictureType;
-
-	//devices
-	unsigned int installedDeviceCount;
-	unsigned int detectedDeviceCount;
-	unsigned int portableStorageCount;
-	unsigned int videoCount;
-	unsigned int micCount;
-	unsigned int speakerCount;
-	unsigned int locationCount;
-	unsigned int scannerCount;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ installedDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ portableStorageDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ audioCaptureDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ audioRenderDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ videoCaptureDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ imageScannerDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ locationAwareDevices;
-
-	//utf8
-	//std::string	
-
-	//error
-	int32			error;
-};
-//end fosterStruct
-
 
 //Method Declaration:
 
@@ -136,8 +69,12 @@ void		produceDeviceInformation(struct cylonStruct& tf);
 void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
 void		produceDeviceTypesInformation(struct cylonStruct& tf);
 
-//Constructor
-//build tory
+//Constructors
+//NOTE: not situated in a cylon.cpp because the method of construction may vary on later platforms
+//build Tory for the current machine
 struct cylonStruct buildTory();
-//End methods declaration
 
+//build a deviceStruct for the current machine
+struct deviceStruct buildDevice();
+//End Constructors
+//End methods declaration
