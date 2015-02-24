@@ -462,14 +462,15 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	//store results in tory based on type string
 	if (type == "all" || type == "All")
 	{
-		tf.installedDevices = devices;
-		tf.installedDeviceCount		= devices->Size;
+		tf.installedDevices		= devices;
+		tf.installedDeviceCount	= devices->Size;
 	}
 	else if (type == "AudioCapture" || type == "audioCapture")
 	{
-		tf.audioCaptureDevices	= devices;
+		//Store Size
+		//tf.audioCaptureDevices	= devices;
 		tf.micCount				= devices->Size;
-	}
+	}//END IF
 	else if (type == "AudioRender" || type == "audioRender")
 	{
 		tf.audioRenderDevices	= devices;
@@ -503,7 +504,18 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		tf.installedDeviceCount = devices->Size;
 	}
 
-	//TODO store/convert devices
+	//toss all detected devices into the list
+	for (int i = 0; i < devices->Size; i++)
+	{
+		//Variable Declaration
+		struct deviceStruct device;
+
+		//Create a device
+		device = buildDevice(devices->GetAt(i));
+
+		//put device in detectedDevices
+		tf.detectedDevices.insert(tf.detectedDevices.end(), device);
+	}//END FOR
 }
 
 //produces device information for all types except the "all" filter
@@ -520,6 +532,7 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 
 	//Grab total count
 	tf.detectedDeviceCount = tf.micCount + tf.speakerCount + tf.locationCount + tf.scannerCount + tf.videoCount + tf.portableStorageCount;
+	//tf.detectedDeviceCount = tf.installedDeviceCount;
 }
 
 //Constructors
@@ -562,9 +575,112 @@ struct cylonStruct buildTory()
 //end build tory
 
 //build a device struct with given data
-struct deviceStruct buildDevice()
+struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo)
 {
+	//Variable Decalaration
+	struct deviceStruct device;
+	std::wstring error;
+	error = L"0";
 
+	//Set device variables from DeviceInformation data
+	if (deviceInfo->Name->IsEmpty())
+	{
+		device.wName = error;
+	}
+	else
+	{	
+		device.wName = deviceInfo->Name->Data();
+	}//END if Name Empty
+	
+	if (deviceInfo->Id->IsEmpty())
+	{
+		device.wID = error;
+	}
+	else
+	{
+		device.wID = deviceInfo->Id->Data();
+	}//END if ID Empty
+
+	//TODO STRESS TEST
+	if (deviceInfo->EnclosureLocation != nullptr)
+	{
+		if (deviceInfo->EnclosureLocation->InDock == true)
+		{
+			//if device is in docking station of computer
+			device.inDock = true;
+		}
+		else
+		{
+			//false or error
+			device.inDock = false;
+		}//END if inDock
+
+		if (deviceInfo->EnclosureLocation->InLid == true)
+		{
+			//if device is in the lid of the computer
+			device.inLid = true;
+		}
+		else
+		{
+			//false or error
+			device.inLid = false;
+		}//END if inLid
+
+		//set the panel location of the device (if available)
+		if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Top))
+		{
+			device.panelLocation = 3;
+		}
+		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Bottom))
+		{
+			device.panelLocation = 4;
+		}
+		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Front))
+		{
+			device.panelLocation = 1;
+		}
+		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Back))
+		{
+			device.panelLocation = 2;
+		}
+		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Left))
+		{
+			device.panelLocation = 5;
+		}
+		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Right))
+		{
+			device.panelLocation = 6;
+		}
+		else
+		{
+			//unknown or error
+			device.panelLocation = 0;
+		}//END if panelLocation
+	}//end if enclosurelocation is null
+
+	if (deviceInfo->IsDefault == true)
+	{
+		deviceInfo->Name->Data();
+		device.isDefault = true;
+	}
+	else
+	{
+		//includes empty, false, etc.
+		device.isDefault = false;
+	}//END if IsDefault
+
+	if (deviceInfo->IsEnabled == true)
+	{
+		device.isEnabled = true;
+	}
+	else
+	{
+		//includes empty, false, etc.
+		device.isEnabled = false;
+	}//END if IsEnabled
+	
+	//return
+	return device;
 }
 //END build device
 //END constructors

@@ -70,7 +70,7 @@ struct cylonStruct
 	Windows::Devices::Enumeration::DeviceInformationCollection^ locationAwareDevices;
 
 	//devices list
-	std::list<deviceStruct> detectedDevices;
+	std::list<struct deviceStruct> detectedDevices;
 
 	//utf8
 	//std::string	
@@ -84,11 +84,13 @@ struct cylonStruct
 struct deviceStruct
 {
 	//TODO convert to UTF8
-	wchar_t*	name;				//device name
-	wchar_t*	physicalEnclosure;  //describes physical location of device in its enclose (i.e. a laptop's built-in webcam)
-	wchar_t*	id;					//unique device ID
-	wchar_t*	icon;				//path to device icon
-	bool		isDefault;			//if device is the default for its function
-	bool		isEnabled;			//if the device is enabled
+	//NOTE: Values of 0 are errors for non-bools
+	unsigned int	panelLocation;		//devices panel location on the physical computer
+	bool			inLid;				//if the device is located in the lid of the computer 
+	bool			inDock;				//if the device is in the docking station of the computer
+	bool			isDefault;			//if device is the default for its function
+	bool			isEnabled;			//if the device is enabled
+	std::wstring	wName, wID, wIcon;  //TODO convert to utf8
+
 };
 //END deviceStruct
