@@ -424,68 +424,49 @@ void produceAccountPicture(struct cylonStruct& tf)
 }
 //end produceAccountPicture
 
-//for getting all installed devices
-void produceDeviceInformation(struct cylonStruct& tf)
-{
-	//Variable Declaration
-	Windows::Foundation::IAsyncOperation<Windows::Devices::Enumeration::DeviceInformationCollection^>^ operation;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ devices;
-
-	//Grab devices
-	operation = Windows::Devices::Enumeration::DeviceInformation::FindAllAsync();
-	
-	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
-	{
-		//WAIT, YO
-	}
-	
-	//get the results and close the operation
-	devices = operation->GetResults();
-	operation->Close();
-
-	//store the collection and size
-	tf.installedDeviceCount	= devices->Size;
-	tf.installedDevices		= devices;
-
-	//TODO store/convert devices
-}
-//end produceDeviceInformation
-
 void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 {
 	//Variable Declaration
 	Windows::Foundation::IAsyncOperation<Windows::Devices::Enumeration::DeviceInformationCollection^>^ operation;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ devices;
 	Windows::Devices::Enumeration::DeviceClass deviceType; // = Windows::Devices::Enumeration::DeviceClass::AudioRender;
+	unsigned int deviceStructType; //type variable in deviceStruct(s) to be built
 
 	//set deviceType operation filter based on type string
 	if (type == "all" || type == "All")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::All;
+		deviceStructType = 1;
 	}
 	else if (type == "AudioCapture" || type == "audioCapture")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::AudioCapture;
+		deviceStructType = 2;
 	}
 	else if (type == "AudioRender" || type == "audioRender")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::AudioRender;
+		deviceStructType = 3;
 	}
 	else if (type == "PortableStorageDevice" || type == "portableStorageDevice")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::PortableStorageDevice;
+		deviceStructType = 4;
 	}
 	else if (type == "VideoCapture" || type == "videoCapture")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::VideoCapture;
+		deviceStructType = 5;
 	}
 	else if (type == "ImageScanner" || type == "imageScanner")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::ImageScanner;
+		deviceStructType = 6;
 	}
 	else if (type == "Location" || type == "location")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::Location;
+		deviceStructType = 7;
 	}
 	else
 	{
@@ -507,47 +488,40 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	operation->Close();
 
 	//store results in tory based on type string
+	//have to repeat if logic here due to necessary waiting on operation, either repeat if-logic or repeat the operation code above
 	if (type == "all" || type == "All")
 	{
-		tf.installedDevices		= devices;
 		tf.installedDeviceCount	= devices->Size;
 	}
 	else if (type == "AudioCapture" || type == "audioCapture")
 	{
 		//Store Size
-		//tf.audioCaptureDevices	= devices;
 		tf.micCount				= devices->Size;
 	}//END IF
 	else if (type == "AudioRender" || type == "audioRender")
 	{
-		tf.audioRenderDevices	= devices;
 		tf.speakerCount			= devices->Size;
 	}
 	else if (type == "PortableStorageDevice" || type == "portableStorageDevice")
 	{
-		tf.portableStorageDevices	= devices;
 		tf.portableStorageCount		= devices->Size;
 	}
 	else if (type == "VideoCapture" || type == "videoCapture")
 	{
-		tf.videoCaptureDevices	= devices;
 		tf.videoCount			= devices->Size;
 	}
 	else if (type == "ImageScanner" || type == "imageScanner")
 	{
-		tf.imageScannerDevices	= devices;
 		tf.scannerCount			= devices->Size;
 	}
 	else if (type == "Location" || type == "location")
 	{
-		tf.locationAwareDevices = devices;
 		tf.locationCount		= devices->Size;
 	}
 	else
 	{
 		//"Hey... You ever wonder why we're here?" - Simmons
 		//ERROR case, default to all
-		tf.installedDevices = devices;
 		tf.installedDeviceCount = devices->Size;
 	}
 
@@ -558,10 +532,11 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		struct deviceStruct device;
 
 		//Create a device
-		device = buildDevice(devices->GetAt(i));
+		device = buildDevice(devices->GetAt(i), deviceStructType);
 
 		//put device in detectedDevices
 		tf.detectedDevices.insert(tf.detectedDevices.end(), device);
+
 	}//END FOR
 }
 
@@ -622,7 +597,7 @@ struct cylonStruct buildTory()
 //end build tory
 
 //build a device struct with given data
-struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo)
+struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType)
 {
 	//Variable Decalaration
 	struct deviceStruct device;

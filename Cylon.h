@@ -12,6 +12,11 @@
 //struct definition for storing user and system data from a WinRT based machine for later use
 struct cylonStruct
 {
+	//polymorphism
+	unsigned int				type;	//0 is error, 1 is generic, 2 is portable storage, 
+										//3 is audio capture, 4 is audio render, 5 is video capture, 
+										//6 is image scanner, 7 is location aware, 8 is display
+
 	//time
 	unsigned int				milliseconds;
 	unsigned int				seconds;
@@ -62,13 +67,13 @@ struct cylonStruct
 	unsigned int scannerCount;
 
 	//TODO refactor these into deviceStructs and linked lists
-	Windows::Devices::Enumeration::DeviceInformationCollection^ installedDevices;
+	/*Windows::Devices::Enumeration::DeviceInformationCollection^ installedDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ portableStorageDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ audioCaptureDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ audioRenderDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ videoCaptureDevices;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ imageScannerDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ locationAwareDevices;
+	Windows::Devices::Enumeration::DeviceInformationCollection^ locationAwareDevices;*/
 
 	//devices list
 	std::list<struct deviceStruct> detectedDevices;
