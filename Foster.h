@@ -59,6 +59,7 @@ void		produceDeviceName(struct cylonStruct& tf);
 void		produceProcessorInfo(struct cylonStruct& tf);
 
 //for getting memory info
+HMODULE		GetKernelModule();
 void		produceMemoryInfo(struct cylonStruct& tf);
 
 //for getting account picture

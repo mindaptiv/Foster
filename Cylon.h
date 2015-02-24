@@ -12,11 +12,6 @@
 //struct definition for storing user and system data from a WinRT based machine for later use
 struct cylonStruct
 {
-	//polymorphism
-	unsigned int				type;	//0 is error, 1 is generic, 2 is portable storage, 
-										//3 is audio capture, 4 is audio render, 5 is video capture, 
-										//6 is image scanner, 7 is location aware, 8 is display
-
 	//time
 	unsigned int				milliseconds;
 	unsigned int				seconds;
@@ -98,5 +93,19 @@ struct deviceStruct
 	bool			isEnabled;			//if the device is enabled
 	std::wstring	wName, wID, wIcon;  //TODO convert to utf8
 
+	//polymorphism
+	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
+										//3 is audio capture, 4 is audio render, 5 is video capture, 
+										//6 is image scanner, 7 is location aware, 8 is display
+
 };
 //END deviceStruct
+
+//child of deviceStruct, for handling DisplayInformation class objects' metadata
+struct displayStruct
+{
+	struct deviceStruct super; //parent deviceStruct object
+
+	//TODO add display information
+};
+//END displayStruct

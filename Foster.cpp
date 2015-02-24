@@ -538,7 +538,19 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		tf.detectedDevices.insert(tf.detectedDevices.end(), device);
 
 	}//END FOR
-}
+
+	//TODO finish display devices
+	//Variable Declaration
+	Windows::Graphics::Display::DisplayInformation^ displayInformation;
+	
+	//Grab display info
+	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
+	
+	
+	//TODO add controller devices
+
+
+}//END produce device information
 
 //produces device information for all types except the "all" filter
 //for "all" use produceDeviceInformation
@@ -603,6 +615,9 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	struct deviceStruct device;
 	std::wstring error;
 	error = L"0";
+	
+	//set device type
+	device.deviceType = deviceType;
 
 	//Set device variables from DeviceInformation data
 	if (deviceInfo->Name->IsEmpty())
