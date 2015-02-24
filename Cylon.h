@@ -44,7 +44,8 @@ struct cylonStruct
 	//TODO get hz?
 
 	//memory
-	uint64		memoryBytes;
+	uint64			memoryBytes; //system memory measured in bytes
+	unsigned int	osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
 
 	//account picture
 	Windows::Storage::IStorageFile^ picture;

@@ -9,6 +9,8 @@
 #include <windows.foundation.h>
 #include <windows.system.h>
 #include <sysinfoapi.h>
+#include <wow64apiset.h>
+#include <tchar.h>
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 //#pragma comment(lib, "Ws2_32.lib")
@@ -163,7 +165,7 @@ void produceUsername(struct cylonStruct& tory)
 
 	//Retrieve username
 	operation			= Windows::System::UserProfile::UserInformation::GetDisplayNameAsync();
-	while(	operation->Status == Windows::Foundation::AsyncStatus::Started)
+	while(operation->Status == Windows::Foundation::AsyncStatus::Started)
 	{
 		//WAIT, YO
 	}
@@ -343,12 +345,57 @@ void produceProcessorInfo(struct cylonStruct& tf)
 }
 //end produce processor info
 
+//TEST
+//TODO CLEANUP IF WORK
+typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+
+//via Ted's Blog
+HMODULE GetKernelModule()
+{
+	//hack to get into kernel32
+	MEMORY_BASIC_INFORMATION mbi = {0};
+	VirtualQuery(VirtualQuery, &mbi, sizeof(mbi));
+	return reinterpret_cast<HMODULE>(mbi.AllocationBase);
+}
+
 //for getting memory info
 void produceMemoryInfo(struct cylonStruct& tf)
 {
-	//return the minimum supported by the OS
-	tf.memoryBytes = 1000000000;
+	//variable declaration
+	BOOL bIsWow64 = FALSE;
+	LPFN_ISWOW64PROCESS fnIsWow64Process;
+	HMODULE kernelModule = GetKernelModule();
 
+	//determine OS architecture
+	//use get process address to get a pointer to function if it exists
+	//use virtual query of virtual query in place of GetModuleHandle()
+	fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(kernelModule, "IsWow64Process");
+
+	//if isWoW64Process is found
+	if (NULL != fnIsWow64Process)
+	{
+		//current process is not found to be Wow64
+		if (!fnIsWow64Process(GetCurrentProcess(), &bIsWow64))
+		{
+			//error case, assume 32-bit
+			tf.memoryBytes = 1000000000;
+			tf.osArchitecture = 32;
+		}
+		//current process is found to be Wow64
+		else
+		{
+			//Process is running under WOW64, assume 64-bit
+			tf.memoryBytes = 2000000000;
+			tf.osArchitecture = 64;
+		}
+	}
+	//if isWow64 is not found
+	else
+	{
+		//not 64-bit, so assume 32-bit
+		tf.memoryBytes = 1000000000;
+		tf.osArchitecture = 32;
+	}
 	//TODO update when WinRT, etc. supports retrieving RAM information from a device
 }
 //end produceMemoryInfo
@@ -505,7 +552,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	}
 
 	//toss all detected devices into the list
-	for (int i = 0; i < devices->Size; i++)
+	for (unsigned int i = 0; i < devices->Size; i++)
 	{
 		//Variable Declaration
 		struct deviceStruct device;
