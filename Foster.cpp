@@ -4,13 +4,9 @@
 //josh@mindaptiv.com
 
 //includes
-#include "pch.h"
+#include "pch.h"  //TODO remove this if necessary for later deployments of Foster
 #include "Foster.h"
-#include <windows.foundation.h>
-#include <windows.system.h>
-#include <sysinfoapi.h>
-#include <wow64apiset.h>
-#include <tchar.h>
+
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 //#pragma comment(lib, "Ws2_32.lib")
@@ -152,7 +148,7 @@ Windows::Storage::IStorageFile^ getFosterPictureFile(struct cylonStruct tf)
 //end getters
 
 
-
+//Producers:
 //for getting username
 void produceUsername(struct cylonStruct& tory)
 {
@@ -567,9 +563,10 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	//Grab total count
 	tf.detectedDeviceCount = tf.micCount + tf.speakerCount + tf.locationCount + tf.scannerCount + tf.videoCount + tf.portableStorageCount;
 	//tf.detectedDeviceCount = tf.installedDeviceCount;
-}
+}//END produce device types information
+//END producers
 
-//Constructors
+//Builders
 //build Tory
 struct cylonStruct buildTory()
 {
@@ -720,4 +717,11 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	return device;
 }
 //END build device
-//END constructors
+
+//builds a displayStruct from a given deviceStruct
+/*struct displayStruct buildDisplay(struct deviceStruct super)
+{
+
+}*/
+//END build display
+//END Builders

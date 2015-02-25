@@ -9,10 +9,9 @@
 #include "Cylon.h"
 
 //includes for windows functionality
-#include <Windows.h>
 #include <WinSock2.h>
-#include <windows.system.userprofile.h>
 
+//definitions
 #define cylon_username__max_Utf8_k 128
 #define cylon_deviceName__max_Utf8_k 192
 
@@ -42,7 +41,7 @@ void*			getFosterMaxAppAddress(struct cylonStruct tf);
 std::wstring getFosterPictureType(struct cylonStruct tf);
 Windows::Storage::IStorageFile^ getFosterPictureFile(struct cylonStruct tf);
 
-
+//Producers
 //for getting username
 void		produceUsername(struct cylonStruct& tf);
 
@@ -70,12 +69,13 @@ void		produceDeviceInformation(struct cylonStruct& tf);
 void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
 void		produceDeviceTypesInformation(struct cylonStruct& tf);
 
-//Constructors
+//Builders
 //NOTE: not situated in a cylon.cpp because the method of construction may vary on later platforms
 //build Tory for the current machine
 struct cylonStruct buildTory();
 
 //build a deviceStruct for the current machine
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType);
+struct displayStruct buildDisplay(struct deviceStruct super);
 //End Constructors
 //End methods declaration
