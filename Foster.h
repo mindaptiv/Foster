@@ -76,6 +76,6 @@ struct cylonStruct buildTory();
 
 //build a deviceStruct for the current machine
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType);
-struct displayStruct buildDisplay(struct deviceStruct super);
+struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation);
 //End Constructors
 //End methods declaration

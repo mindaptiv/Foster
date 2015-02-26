@@ -425,7 +425,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	//Variable Declaration
 	Windows::Foundation::IAsyncOperation<Windows::Devices::Enumeration::DeviceInformationCollection^>^ operation;
 	Windows::Devices::Enumeration::DeviceInformationCollection^ devices;
-	Windows::Devices::Enumeration::DeviceClass deviceType; // = Windows::Devices::Enumeration::DeviceClass::AudioRender;
+	Windows::Devices::Enumeration::DeviceClass deviceType;
 	unsigned int deviceStructType; //type variable in deviceStruct(s) to be built
 
 	//set deviceType operation filter based on type string
@@ -537,10 +537,10 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 
 	//TODO finish display devices
 	//Variable Declaration
-	Windows::Graphics::Display::DisplayInformation^ displayInformation;
+/*	Windows::Graphics::Display::DisplayInformation^ displayInformation;
 	
 	//Grab display info
-	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
+	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView(); */
 	
 	
 	//TODO add controller devices
@@ -719,9 +719,145 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 //END build device
 
 //builds a displayStruct from a given deviceStruct
-/*struct displayStruct buildDisplay(struct deviceStruct super)
+struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation)
 {
+	//Variable Declaration
+	struct displayStruct displayDevice;
 
-}*/
+	//Set parent struct
+	displayDevice.superDevice = superDevice;
+
+	//Set member variables
+	//preferred app orientation
+	if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
+	{
+		displayDevice.rotationPreference = 0;
+	}
+	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Landscape)
+	{
+		displayDevice.rotationPreference = 1;
+	}
+	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Portrait)
+	{
+		displayDevice.rotationPreference = 2;
+	}
+	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
+	{
+		displayDevice.rotationPreference = 4;
+	}
+	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
+	{
+		displayDevice.rotationPreference = 8;
+	}
+	else
+	{
+		//error case
+		displayDevice.rotationPreference = 0;
+	}//END if orientation
+
+	//current monitor orientation
+	if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::None)
+	{
+		displayDevice.currentRotation = 0;
+	}
+	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Landscape)
+	{
+		displayDevice.currentRotation = 1;
+	}
+	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Portrait)
+	{
+		displayDevice.currentRotation = 2;
+	}
+	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
+	{
+		displayDevice.currentRotation = 4;
+	}
+	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
+	{
+		displayDevice.currentRotation = 8;
+	}
+	else
+	{
+		//error case
+		displayDevice.currentRotation = 0;
+	}//END current monitor orientation
+
+	//native monitor orientation
+	if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::None)
+	{
+		displayDevice.nativeRotation = 0;
+	}
+	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::Landscape)
+	{
+		displayDevice.nativeRotation = 1;
+	}
+	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::Portrait)
+	{
+		displayDevice.nativeRotation = 2;
+	}
+	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
+	{
+		displayDevice.nativeRotation = 4;
+	}
+	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
+	{
+		displayDevice.nativeRotation = 8;
+	}
+	else
+	{
+		//error case
+		displayDevice.nativeRotation = 0;
+	}//END if native monitor orientation
+
+	//DPI
+	displayDevice.logicalDPI	= displayInformation->LogicalDpi;
+	displayDevice.rawDPIX		= displayInformation->RawDpiX;
+	displayDevice.rawDPIY		= displayInformation->RawDpiY;
+
+	//Stereoscopic 3D
+	displayDevice.isStereoscopicEnabled = displayInformation->StereoEnabled;
+
+	//Resolution Scale
+	if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Invalid)
+	{
+		displayDevice.resolutionScale = 0;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale100Percent)
+	{
+		displayDevice.resolutionScale = 100;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale120Percent)
+	{
+		displayDevice.resolutionScale = 120;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale140Percent)
+	{
+		displayDevice.resolutionScale = 140;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale150Percent)
+	{
+		displayDevice.resolutionScale = 150;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale160Percent)
+	{
+		displayDevice.resolutionScale = 160;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale180Percent)
+	{
+		displayDevice.resolutionScale = 180;
+	}
+	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale225Percent)
+	{
+		displayDevice.resolutionScale = 225;
+	}
+	else
+	{
+		//error case
+		displayDevice.resolutionScale = 0;
+	}
+
+	//return
+	return displayDevice;
+}
 //END build display
 //END Builders

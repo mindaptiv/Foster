@@ -104,8 +104,16 @@ struct deviceStruct
 //child of deviceStruct, for handling DisplayInformation class objects' metadata
 struct displayStruct
 {
-	struct deviceStruct super; //parent deviceStruct object
+	struct deviceStruct superDevice; //parent deviceStruct object
 
 	//TODO add display information
+	unsigned int	rotationPreference;
+	unsigned int	currentRotation;
+	unsigned int	nativeRotation;
+	unsigned int	resolutionScale;
+	float32			logicalDPI;
+	float32			rawDPIX;
+	float32			rawDPIY;
+	bool			isStereoscopicEnabled;
 };
 //END displayStruct
