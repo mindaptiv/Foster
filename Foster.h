@@ -68,6 +68,7 @@ void		produceAccountPicture(struct cylonStruct& tf);
 void		produceDeviceInformation(struct cylonStruct& tf);
 void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
 void		produceDeviceTypesInformation(struct cylonStruct& tf);
+void		produceDisplayInformation(struct cylonStruct& tf);
 
 //Builders
 //NOTE: not situated in a cylon.cpp because the method of construction may vary on later platforms

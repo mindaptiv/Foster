@@ -535,21 +535,11 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 
 	}//END FOR
 
-	//TODO finish display devices
-	//Variable Declaration
-/*	Windows::Graphics::Display::DisplayInformation^ displayInformation;
-	
-	//Grab display info
-	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView(); */
-	
-	
 	//TODO add controller devices
-
 
 }//END produce device information
 
 //produces device information for all types except the "all" filter
-//for "all" use produceDeviceInformation
 void produceDeviceTypesInformation(struct cylonStruct& tf)
 {
 	//Grab collections and counts
@@ -559,11 +549,45 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	produceDeviceTypeInformation(tf, "ImageScanner");
 	produceDeviceTypeInformation(tf, "VideoCapture");
 	produceDeviceTypeInformation(tf, "PortableStorageDevice");
+	
+	//Grab primary display device
+	produceDisplayInformation(tf);
 
 	//Grab total count
-	tf.detectedDeviceCount = tf.micCount + tf.speakerCount + tf.locationCount + tf.scannerCount + tf.videoCount + tf.portableStorageCount;
-	//tf.detectedDeviceCount = tf.installedDeviceCount;
+	tf.detectedDeviceCount = tf.detectedDevices.size();
 }//END produce device types information
+
+//produces the device and display structs for the primary monitor
+void produceDisplayInformation(struct cylonStruct& tf)
+{
+	//TODO finish display devices
+	//Variable Declaration
+	Windows::Graphics::Display::DisplayInformation^ displayInformation;
+	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
+	struct displayStruct displayDevice;
+	struct deviceStruct  superDevice;
+	unsigned int	deviceType = 8;
+
+	//Build super
+	superDevice = buildDevice(deviceInfo, 8);
+
+	//Grab display info
+	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
+
+	//Build display device
+	displayDevice = buildDisplay(superDevice, displayInformation);
+
+	//TODO get color profile
+
+
+/*	//test
+	struct deviceStruct* testDevice = &displayDevice.superDevice;
+	struct displayStruct* testDisplay = (displayStruct*)testDevice;
+	float32 tester = testDisplay->rawDPIX; */
+
+	//Insert super/parent into devices list
+	tf.detectedDevices.insert(tf.detectedDevices.end(), superDevice);
+}//END produceDisplayInformation
 //END producers
 
 //Builders
@@ -616,6 +640,24 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set device type
 	device.deviceType = deviceType;
 
+	//get out for display devices, as they have different metadata than the regular kind we retrieve
+	if (device.deviceType == 8)
+	{
+		//set errors/unknown values
+		device.wName = error;
+		device.wID	 = error;
+		device.inDock = false;
+		device.inLid = false;
+		device.panelLocation = 0;
+
+		//default these to true as the monitor information returned is currently for the primary, attached display device
+		device.isDefault = true;
+		device.isEnabled = true;
+		
+		//return
+		return device;
+	}
+
 	//Set device variables from DeviceInformation data
 	if (deviceInfo->Name->IsEmpty())
 	{
@@ -635,7 +677,6 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		device.wID = deviceInfo->Id->Data();
 	}//END if ID Empty
 
-	//TODO STRESS TEST
 	if (deviceInfo->EnclosureLocation != nullptr)
 	{
 		if (deviceInfo->EnclosureLocation->InDock == true)

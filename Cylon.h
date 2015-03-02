@@ -76,6 +76,9 @@ struct cylonStruct
 	//utf8
 	//std::string	
 
+	//test
+	struct deviceStruct* monitor;
+
 	//error
 	int32			error;
 };
@@ -91,7 +94,7 @@ struct deviceStruct
 	bool			inDock;				//if the device is in the docking station of the computer
 	bool			isDefault;			//if device is the default for its function
 	bool			isEnabled;			//if the device is enabled
-	std::wstring	wName, wID, wIcon;  //TODO convert to utf8
+	std::wstring	wName, wID;  //TODO convert to utf8
 
 	//polymorphism
 	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
