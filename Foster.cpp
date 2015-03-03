@@ -244,7 +244,17 @@ void produceDateTime(struct cylonStruct& tory)
 	tory.minutes		= st.wMinute;
 	tory.hours			= st.wHour;
 	
-	tory.day			= st.wDayOfWeek;
+	if (0 <= st.wDayOfWeek <= 6)
+	{
+		//1 = Sun, ..., 7 = Sat
+		tory.day = st.wDayOfWeek + 1;
+	}
+	else
+	{
+		//error case
+		tory.day = 0;
+	}//end if
+
 	tory.date			= st.wDay;
 	tory.month			= st.wMonth;
 	tory.year			= st.wYear;
