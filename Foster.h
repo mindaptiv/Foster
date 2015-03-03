@@ -16,31 +16,6 @@
 typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
 //Method Declaration:
-
-//getters
-unsigned int getFosterMilliseconds(struct cylonStruct tf);
-unsigned int getFosterSeconds(struct cylonStruct tf);
-unsigned int getFosterMinutes(struct cylonStruct tf);
-unsigned int getFosterHours(struct cylonStruct tf);
-unsigned int getFosterDay(struct cylonStruct tf);
-unsigned int getFosterDate(struct cylonStruct tf);
-unsigned int getFosterMonth(struct cylonStruct tf);
-unsigned int getFosterYear(struct cylonStruct tf);
-long getFosterTimeZone(struct cylonStruct tf);
-unsigned int getFosterDST(struct cylonStruct tf);
-std::wstring getFosterTimeZoneName(struct cylonStruct tf);
-std::wstring getFosterUsername(struct cylonStruct tf);
-std::wstring getFosterDeviceName(struct cylonStruct tf);
-unsigned short getFosterArchitecture(struct cylonStruct tf); 
-unsigned short getFosterProcessorLevel(struct cylonStruct tf); 
-unsigned long	getFosterPageSize(struct cylonStruct tf);  
-unsigned long	getFosterProcessorCount(struct cylonStruct tf); 
-unsigned long	getFosterAllocationGranularity(struct cylonStruct tf); 
-void*			getFosterMinAppAddress(struct cylonStruct tf); 
-void*			getFosterMaxAppAddress(struct cylonStruct tf); 
-std::wstring getFosterPictureType(struct cylonStruct tf);
-Windows::Storage::IStorageFile^ getFosterPictureFile(struct cylonStruct tf);
-
 //Producers
 //for getting username
 void		produceUsername(struct cylonStruct& tf);
