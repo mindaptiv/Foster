@@ -244,7 +244,7 @@ void produceDateTime(struct cylonStruct& tory)
 	tory.minutes		= st.wMinute;
 	tory.hours			= st.wHour;
 	
-	if (0 <= st.wDayOfWeek <= 6)
+	if (0 <= st.wDayOfWeek && st.wDayOfWeek <= 6)
 	{
 		//1 = Sun, ..., 7 = Sat
 		tory.day = st.wDayOfWeek + 1;
@@ -255,8 +255,26 @@ void produceDateTime(struct cylonStruct& tory)
 		tory.day = 0;
 	}//end if
 
-	tory.date			= st.wDay;
-	tory.month			= st.wMonth;
+	if (1 <= st.wDay && st.wDay <= 31)
+	{
+		tory.date = st.wDay;
+	}
+	else
+	{
+		//error
+		tory.date = 0;
+	}//end if
+
+	if (1 <= st.wMonth && st.wMonth <= 12)
+	{
+		tory.month = st.wMonth;
+	}
+	else
+	{
+		//error
+		tory.month = 0;
+	}//end if
+
 	tory.year			= st.wYear;
 }
 //end produceDateTime
