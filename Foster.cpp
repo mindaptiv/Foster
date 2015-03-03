@@ -170,11 +170,15 @@ void produceUsername(struct cylonStruct& tory)
 	//Convert username to std::wstring
 	operationDataPointer	= managedUsername->Data();
 	wideUsername			= std::wstring(operationDataPointer);
+
 	//TODO convert from wstring to string
 	
 
-	//TODO: check if retrieved username is empty string? (therefore UserInformation::NameAccessAllowed property would be set to false)
-
+	//check if retrieved username is empty string? (therefore UserInformation::NameAccessAllowed property would most likely be set to false)
+	if (wideUsername.length() <= 0)
+	{
+		wideUsername = L"0";
+	}
 
 	//Set username
 	tory.wUsername = wideUsername;
