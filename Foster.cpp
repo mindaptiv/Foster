@@ -280,6 +280,15 @@ void produceDeviceName(struct cylonStruct& tory)
 	std::wstring wDeviceName(size_needed, 0);
 	MultiByteToWideChar(CP_UTF8, 0, &deviceName[0], (int)deviceName.size(), &wDeviceName[0], size_needed);
 
+	//TODO convert to utf8
+
+
+	//Check for empty name
+	if (wDeviceName.length() <= 0)
+	{
+		wDeviceName = L"0";
+	}//end if
+
 	//set device name for tory
 	tory.wDeviceName = wDeviceName;
 }
@@ -346,8 +355,6 @@ void produceProcessorInfo(struct cylonStruct& tf)
 }
 //end produce processor info
 
-
-
 //via Ted's Blog
 HMODULE GetKernelModule()
 {
@@ -355,7 +362,7 @@ HMODULE GetKernelModule()
 	MEMORY_BASIC_INFORMATION mbi = {0};
 	VirtualQuery(VirtualQuery, &mbi, sizeof(mbi));
 	return reinterpret_cast<HMODULE>(mbi.AllocationBase);
-}
+}//end GetKernelModule
 
 //for getting memory info
 void produceMemoryInfo(struct cylonStruct& tf)
