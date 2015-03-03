@@ -466,6 +466,10 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	//Variable Declaration
 	Windows::Graphics::Display::DisplayInformation^ displayInformation;
 	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
+	Windows::Foundation::IAsyncOperation<Windows::Storage::Streams::IRandomAccessStream^>^ operation;
+	Windows::Storage::Streams::IRandomAccessStream^ resultStream;
+	Windows::Storage::Streams::DataReader^ reader;
+	Platform::Array<byte>^ bufferBytes;
 	struct displayStruct displayDevice;
 	struct deviceStruct  superDevice;
 	unsigned int	deviceType = 8;
@@ -479,13 +483,39 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	//Build display device
 	displayDevice = buildDisplay(superDevice, displayInformation);
 
-	//TODO get color profile
+	//TODO readd this later and test more extensively
+	/*
+	//Get Color Profile
+	operation = displayInformation->GetColorProfileAsync();
 
-
-/*	//test
-	struct deviceStruct* testDevice = &displayDevice.superDevice;
-	struct displayStruct* testDisplay = (displayStruct*)testDevice;
-	float32 tester = testDisplay->rawDPIX; */
+	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
+	{
+		//WAIT, YO
+	}
+	resultStream = operation->GetResults();
+	operation->Close();
+	
+	reader = ref new Windows::Storage::Streams::DataReader(resultStream);
+	Windows::Storage::Streams::DataReaderLoadOperation^ readOperation = reader->LoadAsync(static_cast<unsigned int>(resultStream->Size));
+	while (readOperation->Status == Windows::Foundation::AsyncStatus::Started)
+	{
+		//WAIT, YO
+	}
+	
+	if (reader != nullptr)
+	{
+		//read bytes
+		bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
+		reader->ReadBytes(bufferBytes);
+		displayDevice.colorData		= bufferBytes->Data;
+		displayDevice.colorLength	= bufferBytes->Length;
+	}
+	else
+	{
+		displayDevice.colorData		= (unsigned char*) "0";
+		displayDevice.colorLength	= 0;
+	}
+	*/
 
 	//Insert super/parent into devices lists
 	displayDevice.superDevice.displayIndex = tf.displayDevices.size();
