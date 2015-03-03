@@ -9,6 +9,10 @@
 #include <string>
 #include <list>
 
+//definitions
+#define cylon_username__max_Utf8_k 128
+#define cylon_deviceName__max_Utf8_k 192
+
 //struct definition for storing user and system data from a WinRT based machine for later use
 struct cylonStruct
 {
@@ -60,24 +64,10 @@ struct cylonStruct
 	unsigned int speakerCount;
 	unsigned int locationCount;
 	unsigned int scannerCount;
-
-	//TODO refactor these into deviceStructs and linked lists
-	/*Windows::Devices::Enumeration::DeviceInformationCollection^ installedDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ portableStorageDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ audioCaptureDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ audioRenderDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ videoCaptureDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ imageScannerDevices;
-	Windows::Devices::Enumeration::DeviceInformationCollection^ locationAwareDevices;*/
-
-	//devices list
 	std::list<struct deviceStruct> detectedDevices;
 
 	//utf8
 	//std::string	
-
-	//test
-	struct deviceStruct* monitor;
 
 	//error
 	int32			error;
@@ -109,7 +99,6 @@ struct displayStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
 
-	//TODO add display information
 	unsigned int	rotationPreference;
 	unsigned int	currentRotation;
 	unsigned int	nativeRotation;
@@ -118,5 +107,8 @@ struct displayStruct
 	float32			rawDPIX;
 	float32			rawDPIY;
 	bool			isStereoscopicEnabled;
+	
+	//TODO add color profile
+	
 };
 //END displayStruct

@@ -12,8 +12,8 @@
 #include <WinSock2.h>
 
 //definitions
-#define cylon_username__max_Utf8_k 128
-#define cylon_deviceName__max_Utf8_k 192
+//via Ted's Blog
+typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
 //Method Declaration:
 
@@ -75,8 +75,10 @@ void		produceDisplayInformation(struct cylonStruct& tf);
 //build Tory for the current machine
 struct cylonStruct buildTory();
 
-//build a deviceStruct for the current machine
+//build a deviceStruct for a given DeviceInformation object
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType);
+
+//build a displayStruct for a given DisplayInformation object
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation);
 //End Constructors
 //End methods declaration

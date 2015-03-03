@@ -7,7 +7,6 @@
 #include "pch.h"  //TODO remove this if necessary for later deployments of Foster
 #include "Foster.h"
 
-
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 //#pragma comment(lib, "Ws2_32.lib")
 
@@ -167,7 +166,6 @@ void produceUsername(struct cylonStruct& tory)
 	}
 	managedUsername = operation->GetResults();
 	operation->Close();
-	
 
 	//Convert username to std::wstring
 	operationDataPointer	= managedUsername->Data();
@@ -176,6 +174,7 @@ void produceUsername(struct cylonStruct& tory)
 	
 
 	//TODO: check if retrieved username is empty string? (therefore UserInformation::NameAccessAllowed property would be set to false)
+
 
 	//Set username
 	tory.wUsername = wideUsername;
@@ -337,13 +336,13 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	//set allocation granularity
 	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
 
-	//TODO grab hertz
+	//TODO grab CPU hertz
+
+
 }
 //end produce processor info
 
-//TEST
-//TODO CLEANUP IF WORK
-typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+
 
 //via Ted's Blog
 HMODULE GetKernelModule()
