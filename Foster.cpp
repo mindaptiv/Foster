@@ -203,18 +203,18 @@ void produceTimeZone(struct cylonStruct& tory)
 	if (tzResult == TIME_ZONE_ID_STANDARD)
 	{
 		//standard time
-		tory.dst = 0;
+		tory.dst = 1;
 	}
 	else if (tzResult == TIME_ZONE_ID_DAYLIGHT)
 	{
 		//daylight time
-		tory.dst = 1;
+		tory.dst = 2;
 	}
 	else
 	{
 		//otherwise or invalid ==> shenanigans
 		//"Oh hell! I have to run home and grab my broom!"
-		tory.dst = 2;  //value is arbitrary
+		tory.dst = 0;
 	}
 	//end if
 
