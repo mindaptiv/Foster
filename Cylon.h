@@ -109,7 +109,7 @@ struct displayStruct
 	float32			rawDPIX;
 	float32			rawDPIY;
 	bool			isStereoscopicEnabled;
-	unsigned char*  colorData;
-	unsigned int	colorLength;
+	//unsigned char*  colorData;
+	//unsigned int	colorLength;
 };
 //END displayStruct
