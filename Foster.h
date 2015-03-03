@@ -45,6 +45,9 @@ void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
 void		produceDeviceTypesInformation(struct cylonStruct& tf);
 void		produceDisplayInformation(struct cylonStruct& tf);
 
+//for producing values for a pre-existing cylonStruct
+void produceTory(struct cylonStruct& tory);
+
 //Builders
 //NOTE: not situated in a cylon.cpp because the method of construction may vary on later platforms
 //build Tory for the current machine

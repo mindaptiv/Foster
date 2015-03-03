@@ -487,9 +487,48 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	struct displayStruct* testDisplay = (displayStruct*)testDevice;
 	float32 tester = testDisplay->rawDPIX; */
 
-	//Insert super/parent into devices list
-	tf.detectedDevices.insert(tf.detectedDevices.end(), superDevice);
+	//Insert super/parent into devices lists
+	displayDevice.superDevice.displayIndex = tf.displayDevices.size();
+	tf.displayDevices.insert(tf.displayDevices.end(), displayDevice); 
+	tf.detectedDevices.insert(tf.detectedDevices.end(), displayDevice.superDevice);
 }//END produceDisplayInformation
+
+
+//produce Tory
+void produceTory(struct cylonStruct& tory)
+{
+	//Clear pre-existing lists
+	tory.detectedDevices.clear();
+	tory.displayDevices.clear();
+
+	//username
+	produceUsername(tory);
+
+	//device name
+	produceDeviceName(tory);
+
+	//time zone
+	produceTimeZone(tory);
+
+	//date and time
+	produceDateTime(tory);
+
+	//processor
+	produceProcessorInfo(tory);
+
+	//picture
+	produceAccountPicture(tory);
+
+	//devices
+	produceDeviceTypesInformation(tory);
+
+	//memory
+	produceMemoryInfo(tory);
+
+	//TODO add more host queries
+
+}
+//end produce tory 
 //END producers
 
 //Builders
@@ -541,6 +580,9 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	
 	//set device type
 	device.deviceType = deviceType;
+
+	//set to zero for now, modify late if necessary
+	device.displayIndex = 0;
 
 	//get out for display devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == 8)
@@ -634,7 +676,14 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 			device.panelLocation = 0;
 		}//END if panelLocation
 	}//end if enclosurelocation is null
-
+	else
+	{
+		//if enclosure is null
+		//errors for all because unknown/invalid/missing/empty
+		device.panelLocation = 0;
+		device.inDock = false;
+		device.inLid = false;
+	}
 	if (deviceInfo->IsDefault == true)
 	{
 		deviceInfo->Name->Data();

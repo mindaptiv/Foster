@@ -65,6 +65,7 @@ struct cylonStruct
 	unsigned int locationCount;
 	unsigned int scannerCount;
 	std::list<struct deviceStruct> detectedDevices;
+	std::list<struct displayStruct> displayDevices;
 
 	//utf8
 	//std::string	
@@ -86,10 +87,11 @@ struct deviceStruct
 	bool			isEnabled;			//if the device is enabled
 	std::wstring	wName, wID;  //TODO convert to utf8
 
-	//polymorphism
+	//type
 	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
 										//3 is audio capture, 4 is audio render, 5 is video capture, 
 										//6 is image scanner, 7 is location aware, 8 is display
+	unsigned int			displayIndex; //device's index in the displayDevices list if type is 8
 
 };
 //END deviceStruct
