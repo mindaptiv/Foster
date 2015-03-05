@@ -44,6 +44,9 @@ void		produceDeviceInformation(struct cylonStruct& tf);
 void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
 void		produceDeviceTypesInformation(struct cylonStruct& tf);
 void		produceDisplayInformation(struct cylonStruct& tf);
+void		producePointerInformation(struct cylonStruct& tf);
+void		produceKeyboardInformation(struct cylonStruct& tf);
+
 
 //for producing values for a pre-existing cylonStruct
 void produceTory(struct cylonStruct& tory);
@@ -58,5 +61,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 
 //build a displayStruct for a given DisplayInformation object
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation);
-//End Constructors
+
+//build a pointerStruct for a given PointerDevice object
+struct pointerStruct buildPointer(struct deviceStruct superDevice, Windows::Devices::Input::PointerDevice poinDev);
+//End Builders
 //End methods declaration

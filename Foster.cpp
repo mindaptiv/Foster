@@ -455,6 +455,9 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	//Grab primary display device
 	produceDisplayInformation(tf);
 
+	//Grab Keyboard
+	produceKeyboardInformation(tf);
+
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
 }//END produce device types information
@@ -522,6 +525,47 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	tf.displayDevices.insert(tf.displayDevices.end(), displayDevice); 
 	tf.detectedDevices.insert(tf.detectedDevices.end(), displayDevice.superDevice);
 }//END produceDisplayInformation
+
+//produces information about pointer devices
+void producePointerInformation(struct cylonStruct& tf)
+{
+/*	//Grab pointer devices
+	Windows::Foundation::Collections::IVectorView<Windows::Devices::Input::PointerDevice^>^ pointerDevices = Windows::Devices::Input::PointerDevice::GetPointerDevices();
+
+	/*Windows::Devices::Input::PointerDevice^ pointerZero;
+	unsigned int id = 1;
+
+	pointerZero = Windows::Devices::Input::PointerDevice::GetPointerDevice(id);*/
+
+	//test
+	//int test = 1 + 1;
+}
+
+//create deviceStruct for keyboard
+void produceKeyboardInformation(struct cylonStruct& tf)
+{
+	//Variable Declaration
+	struct deviceStruct keyboard;
+	unsigned int keyboardType = 10;
+	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
+	Windows::Devices::Input::KeyboardCapabilities keyboardInfo;
+
+	//check if keyboard exists
+
+	//If keyboard exists
+	if (keyboardInfo.KeyboardPresent == 1)
+	{
+		//build device
+		keyboard = buildDevice(deviceInfo, keyboardType);
+
+		//insert keyboard device into detectedDevices
+		tf.detectedDevices.insert(tf.detectedDevices.end(), keyboard);
+
+		//increment insertion count
+		tf.detectedDeviceCount = tf.detectedDeviceCount + 1;
+	}//END if
+}
+//end produce Keyboard information
 
 
 //produce Tory
@@ -614,8 +658,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set to zero for now, modify late if necessary
 	device.displayIndex = 0;
 
-	//get out for display devices, as they have different metadata than the regular kind we retrieve
-	if (device.deviceType == 8)
+	//get out for display/keyboard/mouse devices, as they have different metadata than the regular kind we retrieve
+	if (device.deviceType == 8 || device.deviceType == 10)
 	{
 		//set errors/unknown values
 		device.wName = error;
@@ -625,12 +669,14 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		device.panelLocation = 0;
 
 		//default these to true as the monitor information returned is currently for the primary, attached display device
+		//default these to true as winrt only seems to care if a single keyboard is attached
 		device.isDefault = true;
 		device.isEnabled = true;
 		
 		//return
 		return device;
 	}
+	//END if device is a special type
 
 	//Set device variables from DeviceInformation data
 	if (deviceInfo->Name->IsEmpty())
@@ -882,4 +928,64 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	return displayDevice;
 }
 //END build display
+
+//build a pointerStruct for a given PointerDevice object
+struct pointerStruct buildPointer(struct deviceStruct superDevice, Windows::Devices::Input::PointerDevice poinDev)
+{
+	//Variable Declaration
+	struct pointerStruct pointerDevice;
+
+	//set super device
+	pointerDevice.superDevice			= superDevice;
+
+	//set pointer device properties
+	if (poinDev.PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Mouse)
+	{
+		pointerDevice.type = 1;
+	}
+	else if (poinDev.PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Pen)
+	{
+		pointerDevice.type = 2;
+	}
+	else if (poinDev.PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+	{
+		pointerDevice.type = 3;
+	}
+	else
+	{
+		//error/unknown/invalid case
+		pointerDevice.type = 0;
+	}//end if type
+
+	if (poinDev.IsIntegrated == true)
+	{
+		pointerDevice.isIntegrated = true;
+	}
+	else
+	{
+		//false/invalid/unknown/error
+		pointerDevice.isIntegrated = false;
+	}//end if integrated
+	
+	pointerDevice.maxContacts		= poinDev.MaxContacts;
+
+	//physical rect
+	pointerDevice.physicalX			= poinDev.PhysicalDeviceRect.X;
+	pointerDevice.physicalY			= poinDev.PhysicalDeviceRect.Y;
+	pointerDevice.physicalHeight	= poinDev.PhysicalDeviceRect.Height;
+	pointerDevice.physicalWidth		= poinDev.PhysicalDeviceRect.Width;
+
+	//screen rect
+	pointerDevice.screenX			= poinDev.ScreenRect.X;
+	pointerDevice.screenY			= poinDev.ScreenRect.Y;
+	pointerDevice.screenHeight		= poinDev.ScreenRect.Height;
+	pointerDevice.screenWidth		= poinDev.ScreenRect.Width;
+
+	//TODO add usage
+	//pointerDevice.maxPhysical		= poinDev.SupportedUsages->
+
+	//return
+	return pointerDevice;
+}
+//END build pointer device
 //END Builders
