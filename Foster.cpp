@@ -8,7 +8,7 @@
 #include "Foster.h"
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
-#pragma comment(lib, "Ws2_32.lib")
+//#pragma comment(lib, "Ws2_32.lib")
 
 //Method definitions:
 //Producers:
@@ -457,9 +457,6 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
-
-	//not asking for all so set installed devices to "0" = error/invalid/unknown
-	tf.installedDeviceCount = 0;
 }//END produce device types information
 
 //produces the device and display structs for the primary monitor
@@ -719,6 +716,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	}
 	if (deviceInfo->IsDefault == true)
 	{
+		deviceInfo->Name->Data();
 		device.isDefault = true;
 	}
 	else

@@ -114,6 +114,7 @@ struct displayStruct
 	//unsigned char*  colorData;
 	//unsigned int	colorLength;
 };
+//end displayStruct
 
 //for handling device-specific metadata for pointer devices
 struct pointerStruct
@@ -147,4 +148,21 @@ struct pointerStruct
 	uint32 usage;
 	uint32 usagePage;
 };
-//END displayStruct
+//END pointerStruct
+
+//struct for a gamepad device
+struct controllerStruct
+{
+	unsigned int userIndex; //player number 0-3
+
+	//xinput state
+	DWORD packetNumber; //for detecting changes
+	WORD  buttons; //bit mask for what buttons are pressed
+	BYTE  leftTrigger; 
+	BYTE  rightTrigger;
+	SHORT thumbLeftY;
+	SHORT thumbLeftX;
+	SHORT thumbRightX;
+	SHORT thumbRightY;
+};
+//end controller struct
