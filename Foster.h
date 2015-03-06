@@ -43,7 +43,6 @@ void		produceMemoryInfo(struct cylonStruct& tf);
 void		produceAccountPicture(struct cylonStruct& tf);
 
 //for getting attached devices
-void		produceDeviceInformation(struct cylonStruct& tf);
 void		produceDeviceTypeInformation(struct cylonStruct& tf, std::string type);
 void		produceDeviceTypesInformation(struct cylonStruct& tf);
 void		produceDisplayInformation(struct cylonStruct& tf);
