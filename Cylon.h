@@ -13,6 +13,77 @@
 #define cylon_username__max_Utf8_k 128
 #define cylon_deviceName__max_Utf8_k 192
 
+//support structure for cylonStruct for holding the properties of a given device in a single struct
+struct deviceStruct
+{
+	//TODO convert to UTF8
+	//NOTE: Values of 0 are errors for non-bools
+	unsigned int	panelLocation;		//devices panel location on the physical computer
+	bool			inLid;				//if the device is located in the lid of the computer 
+	bool			inDock;				//if the device is in the docking station of the computer
+	bool			isDefault;			//if device is the default for its function
+	bool			isEnabled;			//if the device is enabled
+	std::wstring	wName, wID;			//TODO convert to utf8
+
+	//type
+	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
+	//3 is audio capture, 4 is audio render, 5 is video capture, 
+	//6 is image scanner, 7 is location aware, 8 is display
+	//9 is mouse, 10 is keyboard, 11 is gamepad
+	unsigned int			displayIndex; //device's index in the displayDevices list if type is 8
+	unsigned int			inputIndex; //device's index in the pointerDevices list if type is 9
+
+};
+//END deviceStruct
+
+//for handling DisplayInformation class objects' metadata
+struct displayStruct
+{
+	struct deviceStruct superDevice; //parent deviceStruct object
+
+	unsigned int	rotationPreference;
+	unsigned int	currentRotation;
+	unsigned int	nativeRotation;
+	unsigned int	resolutionScale;
+	float32			logicalDPI;
+	float32			rawDPIX;
+	float32			rawDPIY;
+	bool			isStereoscopicEnabled;
+	//unsigned char*  colorData;
+	//unsigned int	colorLength;
+};
+//end displayStruct
+
+//struct for a gamepad device
+struct controllerStruct
+{
+	unsigned int userIndex; //player number 0-3
+
+	//xinput state
+	DWORD packetNumber; //for detecting changes
+	WORD  buttons; //bit mask for what buttons are pressed
+	BYTE  leftTrigger;
+	BYTE  rightTrigger;
+	SHORT thumbLeftY;
+	SHORT thumbLeftX;
+	SHORT thumbRightX;
+	SHORT thumbRightY;
+};
+//end controller struct
+
+//for handling device-specific metadata for a mouse
+struct mouseStruct
+{
+	struct deviceStruct superDevice; //parent deviceStruct object
+
+	//properties of available mice
+	bool anyLeftRightSwapped;
+	bool anyVerticalWheelPresent;
+	bool anyHorizontalWheelPresent;
+	unsigned int maxNumberOfButons; //most buttons available for all given mice attached (i.e. if 3 and 5 button mice are attached, return value should be 5)
+};
+//END mouseStruct
+
 //struct definition for storing user and system data from a WinRT based machine for later use
 struct cylonStruct
 {
@@ -66,6 +137,7 @@ struct cylonStruct
 	unsigned int scannerCount;
 	std::list<struct deviceStruct> detectedDevices;
 	std::list<struct displayStruct> displayDevices;
+	struct mouseStruct mice;
 
 	//utf8
 	//std::string	
@@ -75,94 +147,3 @@ struct cylonStruct
 };
 //END cylonStruct
 
-//support structure for cylonStruct for holding the properties of a given device in a single struct
-struct deviceStruct
-{
-	//TODO convert to UTF8
-	//NOTE: Values of 0 are errors for non-bools
-	unsigned int	panelLocation;		//devices panel location on the physical computer
-	bool			inLid;				//if the device is located in the lid of the computer 
-	bool			inDock;				//if the device is in the docking station of the computer
-	bool			isDefault;			//if device is the default for its function
-	bool			isEnabled;			//if the device is enabled
-	std::wstring	wName, wID;			//TODO convert to utf8
-
-	//type
-	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
-										//3 is audio capture, 4 is audio render, 5 is video capture, 
-										//6 is image scanner, 7 is location aware, 8 is display
-										//9 is pointer, 10 is keyboard, 11 is gamepad
-	unsigned int			displayIndex; //device's index in the displayDevices list if type is 8
-	unsigned int			inputIndex; //device's index in the pointerDevices list if type is 9
-
-};
-//END deviceStruct
-
-//for handling DisplayInformation class objects' metadata
-struct displayStruct
-{
-	struct deviceStruct superDevice; //parent deviceStruct object
-
-	unsigned int	rotationPreference;
-	unsigned int	currentRotation;
-	unsigned int	nativeRotation;
-	unsigned int	resolutionScale;
-	float32			logicalDPI;
-	float32			rawDPIX;
-	float32			rawDPIY;
-	bool			isStereoscopicEnabled;
-	//unsigned char*  colorData;
-	//unsigned int	colorLength;
-};
-//end displayStruct
-
-//for handling device-specific metadata for pointer devices
-struct pointerStruct
-{
-	struct deviceStruct superDevice; //parent deviceStruct object
-
-	unsigned int type; //0 is error/unknown/invalid, 1 is mouse, 2 is stylus, 3 is touch pad
-
-	bool isIntegrated;
-	unsigned int maxContacts;
-
-	//physical device rect
-	float physicalX;
-	float physicalY;
-	float physicalWidth;
-	float physicalHeight;
-
-	//scren rect
-	float screenX;
-	float screenY;
-	float screenWidth;
-	float screenHeight;
-
-	//usage
-	int32 maxLogical;
-	int32 maxPhysical;
-	int32 minLogical;
-	int32 minPhysical;
-	float32 physicalMultiplier;
-	uint32 unit;
-	uint32 usage;
-	uint32 usagePage;
-};
-//END pointerStruct
-
-//struct for a gamepad device
-struct controllerStruct
-{
-	unsigned int userIndex; //player number 0-3
-
-	//xinput state
-	DWORD packetNumber; //for detecting changes
-	WORD  buttons; //bit mask for what buttons are pressed
-	BYTE  leftTrigger; 
-	BYTE  rightTrigger;
-	SHORT thumbLeftY;
-	SHORT thumbLeftX;
-	SHORT thumbRightX;
-	SHORT thumbRightY;
-};
-//end controller struct
