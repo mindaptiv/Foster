@@ -8,7 +8,9 @@
 #include "Foster.h"
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
-//#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "Ws2_32.lib")
+
+
 
 //Method definitions:
 //Producers:
@@ -455,9 +457,10 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	//Grab primary display device
 	produceDisplayInformation(tf);
 
-	//Grab Keyboard and Mouse
+	//Grab Keyboard, Mouse, Controllers
 	produceKeyboardInformation(tf);
 	produceMouseInformation(tf);
+	produceControllerInformation(tf);
 
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
@@ -602,6 +605,44 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 }
 //end produce Keyboard information
 
+//grabs information for (up to) 4 XInput controllers
+void produceControllerInformation(struct cylonStruct& tf)
+{
+	//Variable Declaration
+	DWORD result;
+	XINPUT_STATE state;
+	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
+	unsigned int controllerType = 11;
+
+	//for plays 0-maxPlayerCount
+	for (DWORD userIndex = 0; userIndex < XUSER_MAX_COUNT; userIndex++)
+	{
+		//zero memory
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+		//Get state of controller
+		result = XInputGetState(userIndex, &state);
+
+		if (result == ERROR_SUCCESS)
+		{	
+			//build device struct
+			struct deviceStruct device = buildDevice(deviceInfo, controllerType);
+
+			//build controller struct
+			struct controllerStruct controller = buildController(device, state, userIndex);
+
+			//set controller index
+			controller.superDevice.controllerIndex = tf.controllers.size();
+
+			//insert into controllers
+			tf.controllers.insert(tf.controllers.end(), controller);
+
+			//insert into devices
+			tf.detectedDevices.insert(tf.detectedDevices.end(), controller.superDevice);
+		}//END If controller connected
+
+	}//END FOR
+}//END produceControllerInfo
 
 //produce Tory
 void produceTory(struct cylonStruct& tory)
@@ -609,6 +650,7 @@ void produceTory(struct cylonStruct& tory)
 	//Clear pre-existing lists
 	tory.detectedDevices.clear();
 	tory.displayDevices.clear();
+	tory.controllers.clear();
 
 	//username
 	produceUsername(tory);
@@ -694,7 +736,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	device.displayIndex = 0;
 
 	//get out for display/keyboard/mouse devices, as they have different metadata than the regular kind we retrieve
-	if (device.deviceType == 8 || device.deviceType == 10 || device.deviceType == 9)
+	if (device.deviceType == 8 || device.deviceType == 10 || device.deviceType == 9 || device.deviceType == 11)
 	{
 		//set errors/unknown values
 		device.wName = error;
@@ -963,4 +1005,25 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	return displayDevice;
 }
 //END build display
+
+//build a controllerStruct for a given player number and XINPUT_STATE object
+struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_STATE state, DWORD userIndex)
+{
+	//Variable Declaration
+	struct controllerStruct controller;
+
+	//Set properties
+	controller.superDevice  = superDevice; //set parent
+	controller.userIndex	= (unsigned int)userIndex;
+	controller.buttons		= state.Gamepad.wButtons;
+	controller.packetNumber = state.dwPacketNumber;
+	controller.leftTrigger	= state.Gamepad.bLeftTrigger;
+	controller.rightTrigger = state.Gamepad.bLeftTrigger;
+	controller.thumbLeftX	= state.Gamepad.sThumbLX;
+	controller.thumbLeftY	= state.Gamepad.sThumbLY;
+	controller.thumbRightX	= state.Gamepad.sThumbRX;
+	controller.thumbRightY  = state.Gamepad.sThumbRY;
+
+	return controller;
+}//END build controller
 //END Builders

@@ -3,13 +3,16 @@
 //"Bad becomes good," - Tory Foster
 //josh@mindaptiv.com
 
+//pragmas
 #pragma once
+#pragma comment(lib, "Xinput.lib")
 
 //includes
 #include "Cylon.h"
 
 //includes for windows functionality
 #include <WinSock2.h>
+#include <Xinput.h>
 
 //definitions
 //via Ted's Blog
@@ -61,5 +64,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 
 //build a displayStruct for a given DisplayInformation object
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation);
+
+//build a controllerStruct for a given player number and XINPUT_STATE object
+struct controllerStruct buildController(struct deviceStruct, XINPUT_STATE state, DWORD userIndex);
 //End Builders
 //End methods declaration

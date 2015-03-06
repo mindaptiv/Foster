@@ -31,7 +31,7 @@ struct deviceStruct
 	//6 is image scanner, 7 is location aware, 8 is display
 	//9 is mouse, 10 is keyboard, 11 is gamepad
 	unsigned int			displayIndex; //device's index in the displayDevices list if type is 8
-	unsigned int			inputIndex; //device's index in the pointerDevices list if type is 9
+	unsigned int			controllerIndex; //device's index in the pointerDevices list if type is 9
 
 };
 //END deviceStruct
@@ -57,6 +57,8 @@ struct displayStruct
 //struct for a gamepad device
 struct controllerStruct
 {
+	struct deviceStruct superDevice;
+
 	unsigned int userIndex; //player number 0-3
 
 	//xinput state
@@ -137,6 +139,7 @@ struct cylonStruct
 	unsigned int scannerCount;
 	std::list<struct deviceStruct> detectedDevices;
 	std::list<struct displayStruct> displayDevices;
+	std::list<struct controllerStruct> controllers;
 	struct mouseStruct mice;
 
 	//utf8
