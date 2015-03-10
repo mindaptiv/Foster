@@ -23,7 +23,6 @@ struct deviceStruct
 	bool			inDock;				//if the device is in the docking station of the computer
 	bool			isDefault;			//if device is the default for its function
 	bool			isEnabled;			//if the device is enabled
-	std::wstring	wID;			//TODO convert to utf8
 	std::string     name;
 	std::string		id;
 

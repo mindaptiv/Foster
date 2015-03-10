@@ -740,7 +740,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	{
 		//set errors/unknown values
 		device.name	 = utf8_encode(error);
-		device.wID	 = error;
+		device.id = utf8_encode(error);
 		device.inDock = false;
 		device.inLid = false;
 		device.panelLocation = 0;
@@ -766,11 +766,11 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	
 	if (deviceInfo->Id->IsEmpty())
 	{
-		device.wID = error;
+		device.id = utf8_encode(error);
 	}
 	else
 	{
-		device.wID = deviceInfo->Id->Data();
+		device.id = utf8_encode(deviceInfo->Id->Data());
 	}//END if ID Empty
 
 	if (deviceInfo->EnclosureLocation != nullptr)
