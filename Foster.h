@@ -20,6 +20,7 @@ typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
 //encoding
 std::string utf8_encode(const std::wstring &wstr);
+std::wstring utf8_decode(const std::string &str);
 
 //Method Declaration:
 //Producers

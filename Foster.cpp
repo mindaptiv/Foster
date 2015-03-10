@@ -27,6 +27,19 @@ std::string utf8_encode(const std::wstring &wstr)
 	return strTo;
 }//end utf8 encoding
 
+std::wstring utf8_decode(const std::string &str)
+{
+	if (str.empty())
+	{
+		return std::wstring();
+	}
+
+	int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+	std::wstring wstrTo(size_needed, 0);
+	MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+	return wstrTo;
+}//end utf8 decoding
+
 //Producers:
 //for getting username
 void produceUsername(struct cylonStruct& tory)
@@ -166,6 +179,7 @@ void produceDeviceName(struct cylonStruct& tory)
 	int				size_needed;
 	char			hostBuffer[MAX_PATH];
 	std::string		deviceName;
+	std::wstring	wDeviceName;
 	WSAData			wsa_data;
 	
 	//start WSA
@@ -183,9 +197,7 @@ void produceDeviceName(struct cylonStruct& tory)
 	WSACleanup();
 
 	//convert string to wstring (this is done for debugging with the separate debugging test app that wants wstrings)
-	size_needed = MultiByteToWideChar(CP_UTF8, 0, &deviceName[0], (int)deviceName.size(), NULL, 0);
-	std::wstring wDeviceName(size_needed, 0);
-	MultiByteToWideChar(CP_UTF8, 0, &deviceName[0], (int)deviceName.size(), &wDeviceName[0], size_needed);
+	wDeviceName = utf8_decode(deviceName);
 
 	//Check for empty name
 	if (wDeviceName.length() <= 0)
