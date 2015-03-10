@@ -438,9 +438,6 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		tf.detectedDevices.insert(tf.detectedDevices.end(), device);
 
 	}//END FOR
-
-	//TODO add controller devices
-
 }//END produce device information
 
 //produces device information for all types except the "all" filter
@@ -732,11 +729,11 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set device type
 	device.deviceType = deviceType;
 
-	//set to zero for now, modify late if necessary
+	//set to zero for now, modify later if necessary
 	device.displayIndex		= 0;
 	device.controllerIndex	= 0;
 
-	//get out for display/keyboard/mouse devices, as they have different metadata than the regular kind we retrieve
+	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == 8 || device.deviceType == 10 || device.deviceType == 9 || device.deviceType == 11)
 	{
 		//set errors/unknown values
@@ -746,8 +743,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		device.inLid = false;
 		device.panelLocation = 0;
 
-		//default these to true as the monitor information returned is currently for the primary, attached display device
-		//default these to true as winrt only seems to care if a single keyboard is attached
+		//default these to true 
 		device.isDefault = true;
 		device.isEnabled = true;
 		
