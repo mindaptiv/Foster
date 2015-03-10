@@ -23,8 +23,9 @@ struct deviceStruct
 	bool			inDock;				//if the device is in the docking station of the computer
 	bool			isDefault;			//if device is the default for its function
 	bool			isEnabled;			//if the device is enabled
-	std::wstring	wName, wID;			//TODO convert to utf8
-	std::string     name, id;
+	std::wstring	wID;			//TODO convert to utf8
+	std::string     name;
+	std::string		id;
 
 	//type
 	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 

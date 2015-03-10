@@ -726,9 +726,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 {
 	//Variable Decalaration
 	struct deviceStruct device;
-	std::wstring error;
-	error = L"0";
-	
+	std::wstring error = L"0";
+
 	//set device type
 	device.deviceType = deviceType;
 
@@ -740,7 +739,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	if (device.deviceType == 8 || device.deviceType == 10 || device.deviceType == 9 || device.deviceType == 11)
 	{
 		//set errors/unknown values
-		device.wName = error;
+		device.name	 = utf8_encode(error);
 		device.wID	 = error;
 		device.inDock = false;
 		device.inLid = false;
@@ -758,11 +757,11 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//Set device variables from DeviceInformation data
 	if (deviceInfo->Name->IsEmpty())
 	{
-		device.wName = error;
+		device.name = utf8_encode(error);
 	}
 	else
 	{	
-		device.wName = deviceInfo->Name->Data();
+		device.name = utf8_encode(deviceInfo->Name->Data());
 	}//END if Name Empty
 	
 	if (deviceInfo->Id->IsEmpty())
