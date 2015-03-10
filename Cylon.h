@@ -108,7 +108,6 @@ struct cylonStruct
 	std::string					timeZoneName;
 
 	//names
-	std::wstring				wUsername;		//TODO convert to UTF8?
 	std::wstring				wDeviceName;		//TODO convert to UTF8?
 	std::string					deviceName;
 	std::string					username;

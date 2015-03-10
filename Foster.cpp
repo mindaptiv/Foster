@@ -36,7 +36,6 @@ void produceUsername(struct cylonStruct& tory)
 	Windows::Foundation::IAsyncOperation<Platform::String^>^ operation;
 	const wchar_t* operationDataPointer;
 	std::wstring wideUsername;
-	std::string username;
 
 	//Retrieve username
 	operation			= Windows::System::UserProfile::UserInformation::GetDisplayNameAsync();
@@ -61,7 +60,7 @@ void produceUsername(struct cylonStruct& tory)
 	}
 
 	//Set username
-	tory.wUsername = wideUsername;
+	tory.username = utf8_encode(wideUsername);
 }
 //end getDisplayNameAsync
 
