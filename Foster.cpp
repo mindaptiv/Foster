@@ -244,7 +244,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	//set allocation granularity
 	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
 
-	//grab default minimum CPU hertz  TODO: calculate full hertz later if possible
+	//grab default minimum CPU hertz
 	tf.hertz = minHertzz;
 }
 //end produce processor info
@@ -296,7 +296,6 @@ void produceMemoryInfo(struct cylonStruct& tf)
 		tf.memoryBytes = 1000000000;
 		tf.osArchitecture = 32;
 	}
-	//TODO update when WinRT, etc. supports retrieving RAM information from a device
 }
 //end produceMemoryInfo
 
@@ -467,7 +466,6 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 //produces the device and display structs for the primary monitor
 void produceDisplayInformation(struct cylonStruct& tf)
 {
-	//TODO finish display devices
 	//Variable Declaration
 	Windows::Graphics::Display::DisplayInformation^ displayInformation;
 	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
@@ -673,9 +671,6 @@ void produceTory(struct cylonStruct& tory)
 
 	//memory
 	produceMemoryInfo(tory);
-
-	//TODO add more host queries
-
 }
 //end produce tory 
 //END producers
@@ -710,9 +705,6 @@ struct cylonStruct buildTory()
 
 	//memory
 	produceMemoryInfo(tory);
-
-	//TODO add more host queries
-
 
 	//return
 	return tory;
