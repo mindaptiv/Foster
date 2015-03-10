@@ -125,7 +125,7 @@ struct cylonStruct
 	unsigned int	osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
 
 	//account picture
-	Windows::Storage::IStorageFile^ picture;
+	//TODO add picture location from IStorageFile
 	std::wstring				pictureType;
 
 	//devices

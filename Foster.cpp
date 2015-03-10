@@ -313,7 +313,8 @@ void produceAccountPicture(struct cylonStruct& tf)
 	picture = Windows::System::UserProfile::UserInformation::GetAccountPicture(kind);
 
 	//set picture
-	tf.picture = picture;
+	//TODO get picture location for platform agnosticity
+	//tf.picture = picture;
 
 	//convert picture type to wstring
 	typeDataPointer = picture->FileType->Data();
