@@ -194,7 +194,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	//Variable Declaration
 	SYSTEM_INFO sysinfo;
 	unsigned int architecture;
-	uint64 minimumHertzWin8p1 = 1000000000;
+	float32 minHertzz = 1000000000;
 
 	//Grab system info
 	GetNativeSystemInfo(&sysinfo);
@@ -245,7 +245,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
 
 	//grab default minimum CPU hertz  TODO: calculate full hertz later if possible
-	tf.hertz = minimumHertzWin8p1;
+	tf.hertz = minHertzz;
 }
 //end produce processor info
 

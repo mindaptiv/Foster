@@ -118,7 +118,7 @@ struct cylonStruct
 	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
 	void*						minAppAddress; //lowest point in memory an application can access 
 	void*						maxAppAddress; //highest point in memory an app can access
-	uint64						hertz;
+	float32						hertz;
 
 	//memory
 	uint64			memoryBytes; //system memory measured in bytes
