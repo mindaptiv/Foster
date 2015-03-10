@@ -239,7 +239,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	tf.maxAppAddress = (void*)sysinfo.lpMaximumApplicationAddress;
 
 	//set the number of processors
-	tf.processorCount = (unsigned long)sysinfo.dwNumberOfProcessors;
+	tf.processorCount = (UINT64)sysinfo.dwNumberOfProcessors;
 
 	//set allocation granularity
 	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
