@@ -733,7 +733,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	device.deviceType = deviceType;
 
 	//set to zero for now, modify late if necessary
-	device.displayIndex = 0;
+	device.displayIndex		= 0;
+	device.controllerIndex	= 0;
 
 	//get out for display/keyboard/mouse devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == 8 || device.deviceType == 10 || device.deviceType == 9 || device.deviceType == 11)
