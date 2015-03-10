@@ -10,9 +10,23 @@
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 #pragma comment(lib, "Ws2_32.lib")
 
-
-
 //Method definitions:
+//encoding:
+//via tfinniga @ stackoverflow
+std::string utf8_encode(const std::wstring &wstr)
+{
+	if (wstr.empty())
+	{
+		return std::string();
+	}
+
+	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+	std::string strTo(size_needed, 0);
+	WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+	
+	return strTo;
+}//end utf8 encoding
+
 //Producers:
 //for getting username
 void produceUsername(struct cylonStruct& tory)
@@ -318,9 +332,9 @@ void produceAccountPicture(struct cylonStruct& tf)
 	//convert picture type to wstring
 	typeDataPointer = picture->FileType->Data();
 	pictureType = std::wstring(typeDataPointer);
-
-	//set picture type
-	tf.pictureType = pictureType;
+	
+	//convert picture type to UTF8
+	tf.pictureType = utf8_encode(pictureType);
 }
 //end produceAccountPicture
 

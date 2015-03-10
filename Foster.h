@@ -18,6 +18,9 @@
 //via Ted's Blog
 typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
+//encoding
+std::string utf8_encode(const std::wstring &wstr);
+
 //Method Declaration:
 //Producers
 //for getting username
