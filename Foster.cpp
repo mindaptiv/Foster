@@ -182,13 +182,10 @@ void produceDeviceName(struct cylonStruct& tory)
 	//cleanup WSA
 	WSACleanup();
 
-	//convert string to wstring
+	//convert string to wstring (this is done for debugging with the separate debugging test app that wants wstrings)
 	size_needed = MultiByteToWideChar(CP_UTF8, 0, &deviceName[0], (int)deviceName.size(), NULL, 0);
 	std::wstring wDeviceName(size_needed, 0);
 	MultiByteToWideChar(CP_UTF8, 0, &deviceName[0], (int)deviceName.size(), &wDeviceName[0], size_needed);
-
-	//TODO convert to utf8
-
 
 	//Check for empty name
 	if (wDeviceName.length() <= 0)
@@ -197,7 +194,7 @@ void produceDeviceName(struct cylonStruct& tory)
 	}//end if
 
 	//set device name for tory
-	tory.wDeviceName = wDeviceName;
+	tory.deviceName = utf8_encode(wDeviceName);
 }
 //end produceDeviceName
 
