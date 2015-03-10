@@ -104,8 +104,8 @@ void produceTimeZone(struct cylonStruct& tory)
 	//grab name from TimeZoneInformation
 	standardName = tzinfo.StandardName;
 
-	//place string name into tory
-	tory.wTimeZoneName = standardName;
+	//convert to utf8
+	tory.timeZoneName = utf8_encode(standardName);
 }
 //end produceBias
 

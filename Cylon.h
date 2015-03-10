@@ -105,7 +105,6 @@ struct cylonStruct
 	//timezone
 	unsigned int				dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
 	long						timeZone;		//expressed in minutes +/- UTC
-	std::wstring				wTimeZoneName;
 	std::string					timeZoneName;
 
 	//names
