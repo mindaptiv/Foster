@@ -8,31 +8,47 @@
 //includes
 #include <string>
 #include <list>
+#include <stdint.h>
 
 //definitions
 #define cylon_username__max_Utf8_k 128
 #define cylon_deviceName__max_Utf8_k 192
 
+//Type mappings for reference
+/*
+UBYTE -> unsigned byte  -> uint8_t
+WORD  -> unsigned short -> uint16_t
+DWORD -> unsigned int   -> uint32_t
+long unsigned int       -> uint64_t
+
+BYTE      -> signed byte      -> int8_t
+SHORT     -> short integer    -> int16_t
+long      -> signed integer   -> int32_t
+long long -> signed long long -> int64_t
+
+void*                         -> int64_t
+bool						  -> uint32_t
+*/
+
 //support structure for cylonStruct for holding the properties of a given device in a single struct
 struct deviceStruct
 {
-	//TODO convert to UTF8
 	//NOTE: Values of 0 are errors for non-bools
-	unsigned int	panelLocation;		//devices panel location on the physical computer
-	bool			inLid;				//if the device is located in the lid of the computer 
-	bool			inDock;				//if the device is in the docking station of the computer
-	bool			isDefault;			//if device is the default for its function
-	bool			isEnabled;			//if the device is enabled
+	uint32_t		panelLocation;		//devices panel location on the physical computer
+	uint32_t		inLid;				//if the device is located in the lid of the computer 
+	uint32_t		inDock;				//if the device is in the docking station of the computer
+	uint32_t		isDefault;			//if device is the default for its function
+	uint32_t		isEnabled;			//if the device is enabled
 	std::string     name;
 	std::string		id;
 
 	//type
-	unsigned int			deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
-	//3 is audio capture, 4 is audio render, 5 is video capture, 
-	//6 is image scanner, 7 is location aware, 8 is display
-	//9 is mouse, 10 is keyboard, 11 is gamepad
-	unsigned int			displayIndex; //device's index in the displayDevices list if type is 8
-	unsigned int			controllerIndex; //device's index in the pointerDevices list if type is 9
+	uint32_t				deviceType;	//0 is error, 1 is generic, 2 is portable storage, 
+										//3 is audio capture, 4 is audio render, 5 is video capture, 
+										//6 is image scanner, 7 is location aware, 8 is display
+										//9 is mouse, 10 is keyboard, 11 is gamepad
+	uint32_t				displayIndex; //device's index in the displayDevices list if type is 8
+	uint32_t				controllerIndex; //device's index in the pointerDevices list if type is 9
 
 };
 //END deviceStruct

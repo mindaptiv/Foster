@@ -9,6 +9,7 @@
 
 //includes
 #include "Cylon.h"
+#include <stdint.h>
 
 //includes for windows functionality
 #include <WinSock2.h>

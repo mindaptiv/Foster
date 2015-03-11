@@ -176,7 +176,6 @@ void produceDeviceName(struct cylonStruct& tory)
 {
 	//Variable declaration
 	int				result;
-	int				size_needed;
 	char			hostBuffer[MAX_PATH];
 	std::string		deviceName;
 	std::wstring	wDeviceName;
