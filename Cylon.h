@@ -62,7 +62,7 @@ struct displayStruct
 	uint32_t	currentRotation;
 	uint32_t	nativeRotation;
 	uint32_t	resolutionScale;
-	float32		logicalDPI;
+	float32		logicalDPI; //TODO check floats
 	float32		rawDPIX;
 	float32		rawDPIY;
 	uint32_t	isStereoscopicEnabled;
@@ -107,53 +107,54 @@ struct mouseStruct
 struct cylonStruct
 {
 	//time
-	unsigned int				milliseconds;
-	unsigned int				seconds;
-	unsigned int				minutes;
-	unsigned int				hours;
+	uint32_t	milliseconds;
+	uint32_t	seconds;
+	uint32_t	minutes;
+	uint32_t	hours;
 
 	//date
-	unsigned int				day; //day of the week, 0-6
-	unsigned int				date; //1-31
-	unsigned int				month; //1-12
-	unsigned int				year; //1601 until the cows come home
+	uint32_t	day; //day of the week, 0-6
+	uint32_t	date; //1-31
+	uint32_t	month; //1-12
+	uint32_t	year; //1601 until the cows come home
 
 	//timezone
-	unsigned int				dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
-	long						timeZone;		//expressed in minutes +/- UTC
-	std::string					timeZoneName;
+	uint32_t	dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
+	int32		timeZone;		//expressed in minutes +/- UTC
+	std::string	timeZoneName;
 
 	//names
 	std::string					deviceName;
 	std::string					username;
 
 	//processor
-	unsigned short				architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
-	unsigned short				processorLevel; //architecture-dependent processor level
+	uint16_t architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
+	uint16_t processorLevel; //architecture-dependent processor level
+	//TODO check unsigned long
 	unsigned long				pageSize;  //size of page in bytes
 	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
 	void*						minAppAddress; //lowest point in memory an application can access 
 	void*						maxAppAddress; //highest point in memory an app can access
 	float32						hertz; //speed of processor (or default lowest possible speed for current OS)
-	UINT64						processorCount; //number of processors
+	uint64_t					processorCount; //number of processors
 
 	//memory
-	UINT64			memoryBytes; //system memory measured in bytes
-	unsigned int	osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
+	uint64_t		memoryBytes; //system memory measured in bytes
+	uint32_t		osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
 
 	//account picture
 	//TODO add picture location from IStorageFile
 	std::string					pictureType;
 
 	//devices
-	unsigned int installedDeviceCount;
-	unsigned int detectedDeviceCount;
-	unsigned int portableStorageCount;
-	unsigned int videoCount;
-	unsigned int micCount;
-	unsigned int speakerCount;
-	unsigned int locationCount;
-	unsigned int scannerCount;
+	uint32_t installedDeviceCount;
+	uint32_t detectedDeviceCount;
+	uint32_t portableStorageCount;
+	uint32_t videoCount;
+	uint32_t micCount;
+	uint32_t speakerCount;
+	uint32_t locationCount;
+	uint32_t scannerCount;
 	std::list<struct deviceStruct> detectedDevices;
 	std::list<struct displayStruct> displayDevices;
 	std::list<struct controllerStruct> controllers;
