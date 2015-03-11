@@ -58,14 +58,14 @@ struct displayStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
 
-	unsigned int	rotationPreference;
-	unsigned int	currentRotation;
-	unsigned int	nativeRotation;
-	unsigned int	resolutionScale;
-	float32			logicalDPI;
-	float32			rawDPIX;
-	float32			rawDPIY;
-	bool			isStereoscopicEnabled;
+	uint32_t	rotationPreference;
+	uint32_t	currentRotation;
+	uint32_t	nativeRotation;
+	uint32_t	resolutionScale;
+	float32		logicalDPI;
+	float32		rawDPIX;
+	float32		rawDPIY;
+	uint32_t	isStereoscopicEnabled;
 	//unsigned char*  colorData;
 	//unsigned int	colorLength;
 };
@@ -76,7 +76,7 @@ struct controllerStruct
 {
 	struct deviceStruct superDevice;
 
-	unsigned int userIndex; //player number 0-3
+	uint32_t userIndex; //player number 0-3
 
 	//xinput state
 	DWORD packetNumber; //for detecting changes
