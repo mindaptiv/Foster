@@ -258,6 +258,43 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	//set the min and max pointers for apps
 	tf.minAppAddress = (void*)sysinfo.lpMinimumApplicationAddress;
 	tf.maxAppAddress = (void*)sysinfo.lpMaximumApplicationAddress;
+	void* lolOne = (void*)sysinfo.lpMaximumApplicationAddress;
+	uint64_t lolTwo = (uint64_t)lolOne;
+
+	//check addresses
+	uintptr_t tester = (uintptr_t)sysinfo.lpMaximumApplicationAddress;
+
+	//if pointer is greater than 32-bit precision would allow
+	if (tester > 0xffffffff)
+	{
+		tf.maa = (uint64_t)sysinfo.lpMaximumApplicationAddress;
+	}
+	//if pointer within 32-bit precision
+	else if (tester <= 0xffffffff)
+	{
+		tf.maa = (uint32_t)sysinfo.lpMaximumApplicationAddress;
+	}
+	//what even?
+	else
+	{
+		tf.maa = 0;
+	}
+
+	//if pointer is greater than 32-bit precision would allow
+	if (tester > 0xffffffff)
+	{
+		tf.mia = (uint64_t)sysinfo.lpMinimumApplicationAddress;
+	}
+	//if pointer within 32-bit precision
+	else if (tester <= 0xffffffff)
+	{
+		tf.mia = (uint32_t)sysinfo.lpMinimumApplicationAddress;
+	}
+	//what even?
+	else
+	{
+		tf.mia = 0;
+	}
 
 	//set the number of processors
 	tf.processorCount = (UINT64)sysinfo.dwNumberOfProcessors;
