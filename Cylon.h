@@ -146,6 +146,7 @@ struct cylonStruct
 	//account picture
 	//TODO add picture location from IStorageFile
 	std::string					pictureType;
+	uintptr_t					pictureLocation;
 
 	//devices
 	uint32_t installedDeviceCount;

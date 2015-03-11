@@ -371,7 +371,9 @@ void produceAccountPicture(struct cylonStruct& tf)
 
 	//set picture
 	//TODO get picture location for platform agnosticity
-	//tf.picture = picture;
+	Windows::Storage::IStorageFile^* tempPic;
+	tempPic = &picture;
+	tf.pictureLocation = (uintptr_t)tempPic;
 
 	//convert picture type to wstring
 	typeDataPointer = picture->FileType->Data();
