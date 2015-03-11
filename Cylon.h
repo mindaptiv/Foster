@@ -79,14 +79,14 @@ struct controllerStruct
 	uint32_t userIndex; //player number 0-3
 
 	//xinput state
-	DWORD packetNumber; //for detecting changes
-	WORD  buttons; //bit mask for what buttons are pressed
-	BYTE  leftTrigger;
-	BYTE  rightTrigger;
-	SHORT thumbLeftY;
-	SHORT thumbLeftX;
-	SHORT thumbRightX;
-	SHORT thumbRightY;
+	uint32_t	packetNumber; //for detecting changes
+	uint16_t	buttons; //bit mask for what buttons are pressed
+	int8		leftTrigger;
+	int8		rightTrigger;
+	int16		thumbLeftY;
+	int16		thumbLeftX;
+	int16		thumbRightX;
+	int16		thumbRightY;
 };
 //end controller struct
 
@@ -96,10 +96,10 @@ struct mouseStruct
 	struct deviceStruct superDevice; //parent deviceStruct object
 
 	//properties of available mice
-	bool anyLeftRightSwapped;
-	bool anyVerticalWheelPresent;
-	bool anyHorizontalWheelPresent;
-	unsigned int maxNumberOfButons; //most buttons available for all given mice attached (i.e. if 3 and 5 button mice are attached, return value should be 5)
+	uint32_t anyLeftRightSwapped;
+	uint32_t anyVerticalWheelPresent;
+	uint32_t anyHorizontalWheelPresent;
+	uint32_t maxNumberOfButons; //most buttons available for all given mice attached (i.e. if 3 and 5 button mice are attached, return value should be 5)
 };
 //END mouseStruct
 
