@@ -160,9 +160,6 @@ struct cylonStruct
 	std::list<struct controllerStruct> controllers;
 	struct mouseStruct mice;
 
-	//utf8
-	//std::string	
-
 	//error
 	int32			error;
 };
