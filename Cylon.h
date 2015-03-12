@@ -19,6 +19,7 @@
 UBYTE -> unsigned byte  -> uint8_t
 WORD  -> unsigned short -> uint16_t
 DWORD -> unsigned int   -> uint32_t
+unsigned long           -> uint32_t
 long unsigned int       -> uint64_t
 
 BYTE      -> signed byte      -> int8_t
@@ -26,7 +27,7 @@ SHORT     -> short integer    -> int16_t
 long      -> signed integer   -> int32_t
 long long -> signed long long -> int64_t
 
-void*                         -> uint64_t*
+void*                         -> uintptr_t
 bool						  -> uint32_t
 */
 
@@ -107,42 +108,39 @@ struct mouseStruct
 struct cylonStruct
 {
 	//time
-	uint32_t	milliseconds;
-	uint32_t	seconds;
-	uint32_t	minutes;
-	uint32_t	hours;
+	uint32_t					milliseconds;
+	uint32_t					seconds;
+	uint32_t					minutes;
+	uint32_t					hours;
 
 	//date
-	uint32_t	day; //day of the week, 0-6
-	uint32_t	date; //1-31
-	uint32_t	month; //1-12
-	uint32_t	year; //1601 until the cows come home
+	uint32_t					day; //day of the week, 0-6
+	uint32_t					date; //1-31
+	uint32_t					month; //1-12
+	uint32_t					year; //1601 until the cows come home
 
 	//timezone
-	uint32_t	dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
-	int32		timeZone;		//expressed in minutes +/- UTC
-	std::string	timeZoneName;
+	uint32_t					dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
+	int32						timeZone;		//expressed in minutes +/- UTC
+	std::string					timeZoneName;
 
 	//names
 	std::string					deviceName;
 	std::string					username;
 
 	//processor
-	uint16_t architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
-	uint16_t processorLevel; //architecture-dependent processor level
-	//TODO check unsigned long
-	unsigned long				pageSize;  //size of page in bytes
-	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
-	//void*						minAppAddress; //lowest point in memory an application can access 
-	//void*						maxAppAddress; //highest point in memory an app can access
+	uint16_t					architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
+	uint16_t					processorLevel; //architecture-dependent processor level
+	uint32_t					pageSize;  //size of page in bytes
+	uint32_t					allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
 	uintptr_t					minAppAddress; //lowest point in memory an application can access
 	uintptr_t					maxAppAddress; //highest point in memory an app can access
 	float32						hertz; //speed of processor (or default lowest possible speed for current OS)
 	uint64_t					processorCount; //number of processors
 
 	//memory
-	uint64_t		memoryBytes; //system memory measured in bytes
-	uint32_t		osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
+	uint64_t					memoryBytes; //system memory measured in bytes
+	uint32_t					osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
 
 	//account picture
 	//TODO add picture location from IStorageFile

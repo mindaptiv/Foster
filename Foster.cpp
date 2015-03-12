@@ -253,7 +253,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	tf.architecture = architecture;
 
 	//set tory page size
-	tf.pageSize = (unsigned long)sysinfo.dwPageSize;
+	tf.pageSize = (uint32_t)sysinfo.dwPageSize;
 
 	//set the min and max pointers for apps
 	tf.minAppAddress = (uintptr_t)sysinfo.lpMinimumApplicationAddress;
@@ -263,7 +263,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	tf.processorCount = (UINT64)sysinfo.dwNumberOfProcessors;
 
 	//set allocation granularity
-	tf.allocationGranularity = (unsigned long)sysinfo.dwAllocationGranularity;
+	tf.allocationGranularity = (uint32_t)sysinfo.dwAllocationGranularity;
 
 	//grab default minimum CPU hertz
 	tf.hertz = minHertzz;
