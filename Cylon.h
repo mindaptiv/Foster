@@ -133,9 +133,10 @@ struct cylonStruct
 	//TODO check unsigned long
 	unsigned long				pageSize;  //size of page in bytes
 	unsigned long				allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
-	void*						minAppAddress; //lowest point in memory an application can access 
-	void*						maxAppAddress; //highest point in memory an app can access
-	uint64_t					mia, maa;
+	//void*						minAppAddress; //lowest point in memory an application can access 
+	//void*						maxAppAddress; //highest point in memory an app can access
+	uintptr_t					minAppAddress; //lowest point in memory an application can access
+	uintptr_t					maxAppAddress; //highest point in memory an app can access
 	float32						hertz; //speed of processor (or default lowest possible speed for current OS)
 	uint64_t					processorCount; //number of processors
 
