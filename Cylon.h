@@ -29,6 +29,7 @@ long long -> signed long long -> int64_t
 
 void*                         -> uintptr_t
 bool						  -> uint32_t
+float32                       -> float
 */
 
 //support structure for cylonStruct for holding the properties of a given device in a single struct
@@ -63,9 +64,9 @@ struct displayStruct
 	uint32_t	currentRotation;
 	uint32_t	nativeRotation;
 	uint32_t	resolutionScale;
-	float32		logicalDPI; //TODO check floats
-	float32		rawDPIX;
-	float32		rawDPIY;
+	float		logicalDPI;
+	float		rawDPIX;
+	float		rawDPIY;
 	uint32_t	isStereoscopicEnabled;
 	//unsigned char*  colorData;
 	//unsigned int	colorLength;
@@ -135,7 +136,7 @@ struct cylonStruct
 	uint32_t					allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
 	uintptr_t					minAppAddress; //lowest point in memory an application can access
 	uintptr_t					maxAppAddress; //highest point in memory an app can access
-	float32						hertz; //speed of processor (or default lowest possible speed for current OS)
+	float						hertz; //speed of processor (or default lowest possible speed for current OS)
 	uint64_t					processorCount; //number of processors
 
 	//memory
