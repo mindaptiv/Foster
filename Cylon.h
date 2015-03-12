@@ -83,12 +83,12 @@ struct controllerStruct
 	//xinput state
 	uint32_t	packetNumber; //for detecting changes
 	uint16_t	buttons; //bit mask for what buttons are pressed
-	int8		leftTrigger;
-	int8		rightTrigger;
-	int16		thumbLeftY;
-	int16		thumbLeftX;
-	int16		thumbRightX;
-	int16		thumbRightY;
+	int8_t		leftTrigger;
+	int8_t		rightTrigger;
+	int16_t		thumbLeftY;
+	int16_t		thumbLeftX;
+	int16_t		thumbRightX;
+	int16_t		thumbRightY;
 };
 //end controller struct
 
@@ -122,7 +122,7 @@ struct cylonStruct
 
 	//timezone
 	uint32_t					dst;			//0 is standard time, 1 is daylight time, otherwise is invalid
-	int32						timeZone;		//expressed in minutes +/- UTC
+	int32_t						timeZone;		//expressed in minutes +/- UTC
 	std::string					timeZoneName;
 
 	//names
@@ -163,7 +163,7 @@ struct cylonStruct
 	struct mouseStruct mice;
 
 	//error
-	int32			error;
+	int32_t			error;
 };
 //END cylonStruct
 
