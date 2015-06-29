@@ -95,12 +95,12 @@ void produceTimeZone(struct cylonStruct& tory)
 	if (tzResult == TIME_ZONE_ID_STANDARD)
 	{
 		//standard time
-		tory.dst = 1;
+		tory.dst = 0;
 	}
 	else if (tzResult == TIME_ZONE_ID_DAYLIGHT)
 	{
 		//daylight time
-		tory.dst = 2;
+		tory.dst = 1;
 	}
 	else
 	{
@@ -136,15 +136,15 @@ void produceDateTime(struct cylonStruct& tory)
 	tory.minutes		= st.wMinute;
 	tory.hours			= st.wHour;
 	
-	if (0 <= st.wDayOfWeek && st.wDayOfWeek <= 6)
+	if (SUNDAY<= st.wDayOfWeek && st.wDayOfWeek <= SATURDAY)
 	{
-		//1 = Sun, ..., 7 = Sat
-		tory.day = st.wDayOfWeek + 1;
+		//0 = Sun, ..., 6 = Sat
+		tory.day = st.wDayOfWeek;
 	}
 	else
 	{
 		//error case
-		tory.day = 0;
+		tory.day = SUNDAY;
 	}//end if
 
 	if (1 <= st.wDay && st.wDay <= 31)
@@ -167,7 +167,15 @@ void produceDateTime(struct cylonStruct& tory)
 		tory.month = 0;
 	}//end if
 
-	tory.year			= st.wYear;
+	if (st.wYear < 0)
+	{
+		//error
+		tory.year = 0;
+	}
+	else
+	{
+		tory.year = st.wYear;
+	}
 }
 //end produceDateTime
 
@@ -359,43 +367,44 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	if (type == "all" || type == "All")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::All;
-		deviceStructType = 1;
+		deviceStructType = GENERIC_TYPE;
 	}
 	else if (type == "AudioCapture" || type == "audioCapture")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::AudioCapture;
-		deviceStructType = 2;
+		deviceStructType = AUDIO_CAPTURE_TYPE;
 	}
 	else if (type == "AudioRender" || type == "audioRender")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::AudioRender;
-		deviceStructType = 3;
+		deviceStructType = AUDIO_RENDER_TYPE;
 	}
 	else if (type == "PortableStorageDevice" || type == "portableStorageDevice")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::PortableStorageDevice;
-		deviceStructType = 4;
+		deviceStructType = STORAGE_TYPE;
 	}
 	else if (type == "VideoCapture" || type == "videoCapture")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::VideoCapture;
-		deviceStructType = 5;
+		deviceStructType = VIDEO_CAPTURE_TYPE;
 	}
 	else if (type == "ImageScanner" || type == "imageScanner")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::ImageScanner;
-		deviceStructType = 6;
+		deviceStructType = IMAGE_SCANNER_TYPE;
 	}
 	else if (type == "Location" || type == "location")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::Location;
-		deviceStructType = 7;
+		deviceStructType = LOCATION_AWARE_TYPE;
 	}
 	else
 	{
 		//"Hey... You ever wonder why we're here?" - Simmons
 		//ERROR case, default to all
 		deviceType = Windows::Devices::Enumeration::DeviceClass::All;
+		deviceStructType = GENERIC_TYPE;
 	}
 
 	//Grab devices collection for audio rendering
@@ -498,10 +507,9 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	Platform::Array<byte>^ bufferBytes;
 	struct displayStruct displayDevice;
 	struct deviceStruct  superDevice;
-	unsigned int	deviceType = 8;
 
 	//Build super
-	superDevice = buildDevice(deviceInfo, 8);
+	superDevice = buildDevice(deviceInfo, DISPLAY_TYPE);
 
 	//Grab display info
 	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
@@ -555,7 +563,6 @@ void produceMouseInformation(struct cylonStruct& tf)
 	//Variable Declaration
 	Windows::Devices::Input::MouseCapabilities mouseStats;
 	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
-	unsigned int mouseType = 9;
 	struct deviceStruct mouse;
 	struct mouseStruct mice;
 
@@ -563,7 +570,7 @@ void produceMouseInformation(struct cylonStruct& tf)
 	if (mouseStats.MousePresent == 1)
 	{
 		//build device
-		mouse = buildDevice(deviceInfo, mouseType);
+		mouse = buildDevice(deviceInfo, MOUSE_TYPE);
 
 		//insert mouse device into detectedDevices
 		tf.detectedDevices.insert(tf.detectedDevices.end(), mouse);
@@ -606,7 +613,6 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 {
 	//Variable Declaration
 	struct deviceStruct keyboard;
-	unsigned int keyboardType = 10;
 	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
 	Windows::Devices::Input::KeyboardCapabilities keyboardInfo;
 
@@ -616,7 +622,7 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 	if (keyboardInfo.KeyboardPresent == 1)
 	{
 		//build device
-		keyboard = buildDevice(deviceInfo, keyboardType);
+		keyboard = buildDevice(deviceInfo, KEYBOARD_TYPE);
 
 		//insert keyboard device into detectedDevices
 		tf.detectedDevices.insert(tf.detectedDevices.end(), keyboard);
@@ -631,7 +637,6 @@ void produceControllerInformation(struct cylonStruct& tf)
 	DWORD result;
 	XINPUT_STATE state;
 	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
-	unsigned int controllerType = 11;
 
 	//for plays 0-maxPlayerCount
 	for (DWORD userIndex = 0; userIndex < XUSER_MAX_COUNT; userIndex++)
@@ -645,7 +650,7 @@ void produceControllerInformation(struct cylonStruct& tf)
 		if (result == ERROR_SUCCESS)
 		{	
 			//build device struct
-			struct deviceStruct device = buildDevice(deviceInfo, controllerType);
+			struct deviceStruct device = buildDevice(deviceInfo, CONTROLLER_TYPE);
 
 			//build controller struct
 			struct controllerStruct controller = buildController(device, state, userIndex);
@@ -749,7 +754,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	device.controllerIndex	= 0;
 
 	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
-	if (device.deviceType == 8 || device.deviceType == 10 || device.deviceType == 9 || device.deviceType == 11)
+	if (device.deviceType == DISPLAY_TYPE || device.deviceType == KEYBOARD_TYPE || device.deviceType == MOUSE_TYPE || device.deviceType == CONTROLLER_TYPE)
 	{
 		//set errors/unknown values
 		device.name	 = utf8_encode(error);
@@ -813,32 +818,32 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		//set the panel location of the device (if available)
 		if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Top))
 		{
-			device.panelLocation = 3;
+			device.panelLocation = TOP_PANEL;
 		}
 		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Bottom))
 		{
-			device.panelLocation = 4;
+			device.panelLocation = BOTTOM_PANEL;
 		}
 		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Front))
 		{
-			device.panelLocation = 1;
+			device.panelLocation = FRONT_PANEL;
 		}
 		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Back))
 		{
-			device.panelLocation = 2;
+			device.panelLocation = BACK_PANEL;
 		}
 		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Left))
 		{
-			device.panelLocation = 5;
+			device.panelLocation = LEFT_PANEL;
 		}
 		else if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Right))
 		{
-			device.panelLocation = 6;
+			device.panelLocation = RIGHT_PANEL;
 		}
 		else
 		{
 			//unknown or error
-			device.panelLocation = 0;
+			device.panelLocation = UNKNWON_PANEL_LOCATION;
 		}//END if panelLocation
 	}//end if enclosurelocation is null
 	else
@@ -888,82 +893,82 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	//preferred app orientation
 	if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.rotationPreference = 0;
+		displayDevice.rotationPreference = NO_ROTATION;
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.rotationPreference = 1;
+		displayDevice.rotationPreference = LANDSCAPE;
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.rotationPreference = 2;
+		displayDevice.rotationPreference = PORTRAIT;
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
 	{
-		displayDevice.rotationPreference = 4;
+		displayDevice.rotationPreference = FLIPPED_LANDSCAPE;
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
 	{
-		displayDevice.rotationPreference = 8;
+		displayDevice.rotationPreference = FLIPPED_PORTRAIT;
 	}
 	else
 	{
 		//error case
-		displayDevice.rotationPreference = 0;
+		displayDevice.rotationPreference = NO_ROTATION;
 	}//END if orientation
 
 	//current monitor orientation
 	if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.currentRotation = 0;
+		displayDevice.currentRotation = NO_ROTATION;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.currentRotation = 1;
+		displayDevice.currentRotation = LANDSCAPE;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.currentRotation = 2;
+		displayDevice.currentRotation = PORTRAIT;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
 	{
-		displayDevice.currentRotation = 4;
+		displayDevice.currentRotation = FLIPPED_LANDSCAPE;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
 	{
-		displayDevice.currentRotation = 8;
+		displayDevice.currentRotation = FLIPPED_PORTRAIT;
 	}
 	else
 	{
 		//error case
-		displayDevice.currentRotation = 0;
+		displayDevice.currentRotation = NO_ROTATION;
 	}//END current monitor orientation
 
 	//native monitor orientation
 	if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.nativeRotation = 0;
+		displayDevice.nativeRotation = NO_ROTATION;
 	}
 	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.nativeRotation = 1;
+		displayDevice.nativeRotation = LANDSCAPE;
 	}
 	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.nativeRotation = 2;
+		displayDevice.nativeRotation = PORTRAIT;
 	}
 	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
 	{
-		displayDevice.nativeRotation = 4;
+		displayDevice.nativeRotation = FLIPPED_LANDSCAPE;
 	}
 	else if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
 	{
-		displayDevice.nativeRotation = 8;
+		displayDevice.nativeRotation = FLIPPED_PORTRAIT;
 	}
 	else
 	{
 		//error case
-		displayDevice.nativeRotation = 0;
+		displayDevice.nativeRotation = NO_ROTATION;
 	}//END if native monitor orientation
 
 	//DPI

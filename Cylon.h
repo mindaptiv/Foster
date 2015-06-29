@@ -32,6 +32,89 @@ bool						  -> uint32_t
 float32                       -> float
 */
 
+//Constants
+//Days
+static const int SUNDAY = 0;
+static const int MONDAY = 1;
+static const int TUESDAY = 2;
+static const int WEDNESDAY = 3;
+static const int THURSDAY = 4;
+static const int FRIDAY = 5;
+static const int SATURDAY = 6;
+
+//Months
+static const int JANUARY = 1;
+static const int FEBRUARY = 2;
+static const int MARCH = 3;
+static const int APRIL = 4;
+static const int MAY = 5;
+static const int JUNE = 6;
+static const int JULY = 7;
+static const int AUGUST = 8;
+static const int SEPTEMBER = 9;
+static const int OCTOBER = 10;
+static const int DECEMBER = 12;
+static const int NOVEMBER = 11;
+
+//DST
+static const int STANDARD_TIME = 0;
+static const int DAYLIGHT_TIME = 1;
+
+//controllerStruct buttons
+static const int A_BUTTON = 0x1000;
+static const int B_BUTTON = 0x2000;
+static const int X_BUTTON = 0x4000;
+static const int Y_BUTTON = 0x8000;
+static const int UP_DPAD = 0x0001;
+static const int DOWN_DPAD = 0x0002;
+static const int LEFT_DPAD = 0x0004;
+static const int RIGHT_DPAD = 0x0008;
+static const int START_BUTTON = 0x0010;
+static const int SELECT_BUTTON = 0x0020;
+static const int LEFT_THUMB = 0x0040;
+static const int RIGHT_THUMB = 0x0080;
+static const int LEFT_SHOULDER = 0x0100;
+static const int RIGHT_SHOULDER = 0x0200;
+
+//deviceStruct Types
+static const int ERROR_TYPE = 0;
+static const int GENERIC_TYPE = 1;
+static const int AUDIO_CAPTURE_TYPE = 2;
+static const int AUDIO_RENDER_TYPE = 3;
+static const int STORAGE_TYPE = 4;
+static const int VIDEO_CAPTURE_TYPE = 5;
+static const int IMAGE_SCANNER_TYPE = 6;
+static const int LOCATION_AWARE_TYPE = 7;
+static const int DISPLAY_TYPE = 8;
+static const int MOUSE_TYPE = 9;
+static const int KEYBOARD_TYPE = 10;
+static const int CONTROLLER_TYPE = 11;
+static const int TOUCHSCREEN_TYPE = 12;
+static const int TOUCH_PAD_TYPE = 13;
+static const int TRACKBALL_TYPE = 14;
+static const int STYLUS_TYPE = 15;
+static const int POSITION_TYPE = 16;
+
+static const int RUMBLE_TYPE = 18;
+static const int SENSOR_TYPE = 19;
+static const int BLUETOOTH_RADIO_TYPE = 20;
+
+//deviceStruct location
+static const int UNKNWON_PANEL_LOCATION = 0;
+static const int FRONT_PANEL = 1;
+static const int BACK_PANEL = 2;
+static const int TOP_PANEL = 3;
+static const int BOTTOM_PANEL = 4;
+static const int LEFT_PANEL = 5;
+static const int RIGHT_PANEL = 6;
+
+//displayStruct rotations
+static const int NO_ROTATION = 0;
+static const int LANDSCAPE = 1;
+static const int PORTRAIT = 2;
+static const int FLIPPED_LANDSCAPE = 4;
+static const int FLIPPED_PORTRAIT = 8;
+
 //support structure for cylonStruct for holding the properties of a given device in a single struct
 struct deviceStruct
 {
@@ -51,6 +134,12 @@ struct deviceStruct
 										//9 is mouse, 10 is keyboard, 11 is gamepad
 	uint32_t				displayIndex; //device's index in the displayDevices list if type is 8
 	uint32_t				controllerIndex; //device's index in the pointerDevices list if type is 9
+
+	//additions from Saul Marrow
+	uint32_t vendorID;
+	uint32_t orientation;
+	uint32_t storageIndex;
+	uint32_t sensorIndex;
 
 };
 //END deviceStruct
