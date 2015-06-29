@@ -297,6 +297,8 @@ struct cylonStruct
 	std::list<struct deviceStruct> detectedDevices;
 	std::list<struct displayStruct> displayDevices;
 	std::list<struct controllerStruct> controllers;
+	std::list<struct sensorStruct> sensors;
+	std::list<struct storageStruct> storageDevices;
 	struct mouseStruct mice;
 
 	//error
