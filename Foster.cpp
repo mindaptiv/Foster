@@ -765,7 +765,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set to zero for now, modify later if necessary
 	device.displayIndex		= 0;
 	device.controllerIndex	= 0;
-	device.sensorIndex      = 0;
+	device.sensorsIndex     = 0;
 	device.storageIndex     = 0;
 	device.orientation		= 0;
 
@@ -1053,18 +1053,50 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 {
 	//Variable Declaration
 	struct controllerStruct controller;
+	
+	//Normalize Trigger values
+	float oldTriggerMin = (float)0.0;
+	float oldTriggerMax = (float)255.0;
+	
+	float newTriggerMin = (float)0.0;
+	float newTriggerMax = (float)1.0;
+
+	float newTriggerRange = (float)1.0;
+	float oldTriggerRange = (float)255.0;
+	
+	float oldTriggerLeft  = (float)state.Gamepad.bLeftTrigger;
+	float oldTriggerRight = (float)state.Gamepad.bRightTrigger;
+
+	//Get/set new trigger values
+	controller.leftTrigger = (float)((((oldTriggerLeft - oldTriggerMin) * newTriggerRange) / oldTriggerRange) + newTriggerMin);
+	controller.rightTrigger = (float)((((oldTriggerRight - oldTriggerMin) * newTriggerRange) / oldTriggerRange) + newTriggerMin);
+
+	//Normalize thumbstick values
+	float oldThumbMin = (float)-32768.0;
+	float oldThumbMax = (float)32767.0;
+
+	float newThumbMin = (float)-1.0;
+	float newThumbMax = (float)1.0;
+
+	float oldThumbRange = (float)(32767 - 32768);
+	float newThumbRange = (float)(2.0);
+
+	float oldThumbLeftX = (float)state.Gamepad.sThumbLX;
+	float oldThumbLeftY = (float)state.Gamepad.sThumbLY;
+	float oldThumbRightX = (float)state.Gamepad.sThumbRX;
+	float oldThumbRightY = (float)state.Gamepad.sThumbRY;
+
+	//Get/set new thumbstick values
+	controller.thumbLeftX = (float)((((oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+	controller.thumbLeftY = (float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+	controller.thumbRightX = (float)((((oldThumbRightX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+	controller.thumbRightY = (float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 
 	//Set properties
 	controller.superDevice  = superDevice; //set parent
 	controller.userIndex	= (unsigned int)userIndex;
 	controller.buttons		= state.Gamepad.wButtons;
 	controller.packetNumber = state.dwPacketNumber;
-	controller.leftTrigger	= state.Gamepad.bLeftTrigger;
-	controller.rightTrigger = state.Gamepad.bLeftTrigger;
-	controller.thumbLeftX	= state.Gamepad.sThumbLX;
-	controller.thumbLeftY	= state.Gamepad.sThumbLY;
-	controller.thumbRightX	= state.Gamepad.sThumbRX;
-	controller.thumbRightY  = state.Gamepad.sThumbRY;
 
 	return controller;
 }//END build controller
