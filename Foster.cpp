@@ -95,18 +95,18 @@ void produceTimeZone(struct cylonStruct& tory)
 	if (tzResult == TIME_ZONE_ID_STANDARD)
 	{
 		//standard time
-		tory.dst = 0;
+		tory.dst = STANDARD_TIME;
 	}
 	else if (tzResult == TIME_ZONE_ID_DAYLIGHT)
 	{
 		//daylight time
-		tory.dst = 1;
+		tory.dst = DAYLIGHT_TIME;
 	}
 	else
 	{
 		//otherwise or invalid ==> shenanigans
 		//"Oh hell! I have to run home and grab my broom!"
-		tory.dst = 0;
+		tory.dst = STANDARD_TIME;
 	}
 	//end if
 
