@@ -1007,40 +1007,40 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	//Resolution Scale
 	if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Invalid)
 	{
-		displayDevice.resolutionScale = 0;
+		displayDevice.resolutionScale = (float)0.0;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale100Percent)
 	{
-		displayDevice.resolutionScale = 100;
+		displayDevice.resolutionScale = (float)1.0;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale120Percent)
 	{
-		displayDevice.resolutionScale = 120;
+		displayDevice.resolutionScale = (float)1.2;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale140Percent)
 	{
-		displayDevice.resolutionScale = 140;
+		displayDevice.resolutionScale = (float)1.4;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale150Percent)
 	{
-		displayDevice.resolutionScale = 150;
+		displayDevice.resolutionScale = (float)1.5;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale160Percent)
 	{
-		displayDevice.resolutionScale = 160;
+		displayDevice.resolutionScale = (float)1.6;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale180Percent)
 	{
-		displayDevice.resolutionScale = 180;
+		displayDevice.resolutionScale = (float)1.8;
 	}
 	else if (displayInformation->ResolutionScale == Windows::Graphics::Display::ResolutionScale::Scale225Percent)
 	{
-		displayDevice.resolutionScale = 225;
+		displayDevice.resolutionScale = (float)2.25;
 	}
 	else
 	{
 		//error case
-		displayDevice.resolutionScale = 0;
+		displayDevice.resolutionScale = (float)0.0;
 	}
 
 	//return
