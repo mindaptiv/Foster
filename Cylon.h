@@ -194,6 +194,34 @@ struct mouseStruct
 };
 //END mouseStruct
 
+//for handling device-specific metadata for a sensor in an Android context
+struct sensorStruct
+{
+	struct deviceStruct superDevice; //parent deviceStruct object
+
+	//data from Android 16+
+	uint32_t minDelay;
+	uint32_t type; //based on Android Sensor class type mappings
+	uint32_t version;
+	std::string name;
+	std::string vendor;
+	float power;
+	float resolution;
+	float maxRange;
+
+	//data from Android 19+
+	uint32_t fifoMaxEventCount;
+	uint32_t fifoReservedEventCount;
+
+	//data from Android 20+
+	std::string stringType;
+
+	//data from Android 21+
+	uint32_t maxDelay;
+	uint32_t reportingMode; //based on Android Sensor class type mappings
+	uint32_t isWakeUpSensor;
+};
+
 //struct definition for storing user and system data from a WinRT based machine for later use
 struct cylonStruct
 {
