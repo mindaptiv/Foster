@@ -222,6 +222,22 @@ struct sensorStruct
 	uint32_t isWakeUpSensor;
 };
 
+//struct for representing a path used for storage (device, mounted network drive, etc.)
+struct storageStruct
+{
+	struct deviceStruct superDevice; //parent deviceStruct object
+
+	//Path to access the storage device in the file system
+	std::string path;
+
+	//Space
+	uint64_t bytesAvails;
+	uint64_t totalBytes;
+
+	//Emulated Storage?
+	uint32_t isEmulated;
+};
+
 //struct definition for storing user and system data from a WinRT based machine for later use
 struct cylonStruct
 {
