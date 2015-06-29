@@ -749,6 +749,9 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set device type
 	device.deviceType = deviceType;
 
+	//set unused fields
+	device.vendorID = 0;
+
 	//set to zero for now, modify later if necessary
 	device.displayIndex		= 0;
 	device.controllerIndex	= 0;
