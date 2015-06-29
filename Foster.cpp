@@ -755,6 +755,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set to zero for now, modify later if necessary
 	device.displayIndex		= 0;
 	device.controllerIndex	= 0;
+	device.orientation		= 0;
 
 	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == DISPLAY_TYPE || device.deviceType == KEYBOARD_TYPE || device.deviceType == MOUSE_TYPE || device.deviceType == CONTROLLER_TYPE)
@@ -896,19 +897,22 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	//preferred app orientation
 	if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.rotationPreference = NO_ROTATION;
+		displayDevice.rotationPreference		= NO_ROTATION;
+	
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.rotationPreference = LANDSCAPE;
+		displayDevice.rotationPreference		= LANDSCAPE;
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.rotationPreference = PORTRAIT;
+		displayDevice.rotationPreference		= PORTRAIT;
+
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
 	{
 		displayDevice.rotationPreference = FLIPPED_LANDSCAPE;
+
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
 	{
@@ -923,28 +927,34 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	//current monitor orientation
 	if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.currentRotation = NO_ROTATION;
+		displayDevice.currentRotation			= NO_ROTATION;
+		displayDevice.superDevice.orientation	= NO_ROTATION;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.currentRotation = LANDSCAPE;
+		displayDevice.currentRotation			= LANDSCAPE;
+		displayDevice.superDevice.orientation	= LANDSCAPE;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.currentRotation = PORTRAIT;
+		displayDevice.currentRotation			= PORTRAIT;
+		displayDevice.superDevice.orientation	= PORTRAIT;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
 	{
-		displayDevice.currentRotation = FLIPPED_LANDSCAPE;
+		displayDevice.currentRotation			= FLIPPED_LANDSCAPE;
+		displayDevice.superDevice.orientation	= FLIPPED_LANDSCAPE;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
 	{
-		displayDevice.currentRotation = FLIPPED_PORTRAIT;
+		displayDevice.currentRotation			= FLIPPED_PORTRAIT;
+		displayDevice.superDevice.orientation	= FLIPPED_PORTRAIT;
 	}
 	else
 	{
 		//error case
-		displayDevice.currentRotation = NO_ROTATION;
+		displayDevice.currentRotation			= NO_ROTATION;
+		displayDevice.superDevice.orientation	= NO_ROTATION;
 	}//END current monitor orientation
 
 	//native monitor orientation
