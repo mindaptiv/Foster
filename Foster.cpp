@@ -765,6 +765,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	//set to zero for now, modify later if necessary
 	device.displayIndex		= 0;
 	device.controllerIndex	= 0;
+	device.sensorIndex      = 0;
+	device.storageIndex     = 0;
 	device.orientation		= 0;
 
 	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
