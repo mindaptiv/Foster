@@ -278,7 +278,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 //via Ted's Blog
 HMODULE GetKernelModule()
 {
-	//hack to get into kernel32
+	//NOTE: may not be permissable in Windows Store - hack to get into kernel32
 	MEMORY_BASIC_INFORMATION mbi = {0};
 	VirtualQuery(VirtualQuery, &mbi, sizeof(mbi));
 	return reinterpret_cast<HMODULE>(mbi.AllocationBase);
@@ -291,6 +291,11 @@ void produceMemoryInfo(struct cylonStruct& tf)
 	BOOL bIsWow64 = FALSE;
 	LPFN_ISWOW64PROCESS fnIsWow64Process;
 	HMODULE kernelModule = GetKernelModule();
+
+	//set unavailable fields
+	tf.lowMemory	= 0;
+	tf.threshold	= 0;
+	tf.bytesAvails	= 0;
 
 	//determine OS architecture
 	//use get process address to get a pointer to function if it exists

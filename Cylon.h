@@ -231,6 +231,9 @@ struct cylonStruct
 	//memory
 	uint64_t					memoryBytes; //system memory measured in bytes
 	uint32_t					osArchitecture; //operating system architecture, 16, 32, 64, 128, etc.
+	uint32_t					lowMemory;
+	uint64_t					threshold;
+	uint64_t					bytesAvails;
 
 	//account picture
 	//TODO add picture location from IStorageFile
