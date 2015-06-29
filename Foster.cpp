@@ -332,13 +332,13 @@ void produceAccountPicture(struct cylonStruct& tf)
 	Windows::System::UserProfile::AccountPictureKind kind = Windows::System::UserProfile::AccountPictureKind::SmallImage;
 	Windows::Storage::IStorageFile^ picture;
 	std::wstring pictureType;
+	std::wstring picturePath;
 	const wchar_t* typeDataPointer;
 
 	//retrieve picture
 	picture = Windows::System::UserProfile::UserInformation::GetAccountPicture(kind);
 
 	//set picture
-	//TODO get picture location for platform agnosticity
 	Windows::Storage::IStorageFile^* tempPic;
 	tempPic = &picture;
 	tf.pictureLocation = (uintptr_t)tempPic;
@@ -349,6 +349,14 @@ void produceAccountPicture(struct cylonStruct& tf)
 	
 	//convert picture type to UTF8
 	tf.pictureType = utf8_encode(pictureType);
+
+	//Convert picture path to wstring
+	typeDataPointer = picture->Path->Data();
+	picturePath     = std::wstring(typeDataPointer);
+
+	//convert and store picturePath to UTF8 in cylonStruct
+	tf.picturePath= utf8_encode(picturePath);
+
 }
 //end produceAccountPicture
 
