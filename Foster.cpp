@@ -222,7 +222,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 {
 	//Variable Declaration
 	SYSTEM_INFO sysinfo;
-	unsigned int architecture;
+	std::string architecture_s;
 	float32 minHertzz = 1000000000;
 
 	//Grab system info
@@ -233,32 +233,29 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
 	{
 		//x64 (AMD or Intel)
-		architecture = 1;
+		tf.architecture = "x64";
 	}
 	else if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM)
 	{
 		//ARM
-		architecture = 2;
+		tf.architecture = "ARM";
 	}
 	else if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64)
 	{
 		//Intel Itanium-based
-		architecture = 3;
+		tf.architecture = "Itanium";
 	}
 	else if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL)
 	{
 		//x86
-		architecture = 4;
+		tf.architecture = "x86";
 	}
 	else
 	{
 		//unknown error
-		architecture = 0;
+		tf.architecture = "0";
 	}
 	//end if
-
-	//set tory architecture
-	tf.architecture = architecture;
 
 	//set tory page size
 	tf.pageSize = (uint32_t)sysinfo.dwPageSize;

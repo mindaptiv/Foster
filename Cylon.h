@@ -219,7 +219,7 @@ struct cylonStruct
 	std::string					username;
 
 	//processor
-	uint16_t					architecture; //0=error, 1=x64, 2=ARM, 3=Itanium, 4=x86
+	std::string					architecture;
 	uint16_t					processorLevel; //architecture-dependent processor level
 	uint32_t					pageSize;  //size of page in bytes
 	uint32_t					allocationGranularity; //granularity for starting address where virtual memory can be allocated (assuming in bits?)
