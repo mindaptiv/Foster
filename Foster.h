@@ -14,6 +14,7 @@
 //includes for windows functionality
 #include <WinSock2.h>
 #include <Xinput.h>
+#include <windows.storage.h>
 
 //definitions
 //via Ted's Blog
@@ -71,5 +72,8 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 
 //build a controllerStruct for a given player number and XINPUT_STATE object
 struct controllerStruct buildController(struct deviceStruct, XINPUT_STATE state, DWORD userIndex);
+
+//build a storageStruct for a given DeviceInformation object
+struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, struct deviceStruct superDevice);
 //End Builders
 //End methods declaration

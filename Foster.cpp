@@ -476,9 +476,22 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		//Create a device
 		device = buildDevice(devices->GetAt(i), deviceStructType);
 
+		//if necessary, build a storage device
+		if (deviceStructType == STORAGE_TYPE)
+		{
+			//build storage device
+			struct storageStruct storage = buildStorage(devices->GetAt(i), device);
+			
+			//insert into storages
+			tf.storages.insert(tf.storages.end(), storage);
+
+			//set storage index of super
+			device.storageIndex = tf.storages.size();
+		}
+
 		//put device in detectedDevices
 		tf.detectedDevices.insert(tf.detectedDevices.end(), device);
-
+		int one = 1;
 	}//END FOR
 }//END produce device information
 
@@ -748,6 +761,30 @@ struct cylonStruct buildTory()
 	return tory;
 }
 //end build tory
+
+//build a storageStruct with given data
+struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, struct deviceStruct superDevice)
+{
+	//Variable declaration
+	struct storageStruct storage;
+	std::wstring error = L"0";
+
+	//Set parent paired deviceStruct
+	storage.superDevice = superDevice;
+
+	//get path
+	//NOTE: if not already noted in documentation, your package manifest requires access to Removable Storage for these next two lines to function!
+	Windows::Storage::StorageFolder^ folder = Windows::Devices::Portable::StorageDevice::FromId(deviceInfo->Id);
+	storage.path = utf8_encode(folder->Path->Data());
+
+	//set unavailable fields
+	storage.bytesAvails = 0;
+	storage.totalBytes  = 0;
+	storage.isEmulated  = 0;
+
+	//return struct
+	return storage;
+}
 
 //build a device struct with given data
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType)
