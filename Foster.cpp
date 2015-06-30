@@ -1078,7 +1078,7 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	float newThumbMin = (float)-1.0;
 	float newThumbMax = (float)1.0;
 
-	float oldThumbRange = (float)(32767 - 32768);
+	float oldThumbRange = (float)(32767 + 32768);
 	float newThumbRange = (float)(2.0);
 
 	float oldThumbLeftX = (float)state.Gamepad.sThumbLX;
@@ -1087,7 +1087,7 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	float oldThumbRightY = (float)state.Gamepad.sThumbRY;
 
 	//Get/set new thumbstick values
-	controller.thumbLeftX = (float)((((oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+	controller.thumbLeftX = (float)((( (oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange ) + newThumbMin );
 	controller.thumbLeftY = (float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 	controller.thumbRightX = (float)((((oldThumbRightX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 	controller.thumbRightY = (float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
