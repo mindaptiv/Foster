@@ -276,7 +276,6 @@ struct cylonStruct
 	uint64_t					bytesAvails;
 
 	//account picture
-	//TODO add picture location from IStorageFile
 	std::string					pictureType;
 	std::string					picturePath;
 	uintptr_t					pictureLocation;
