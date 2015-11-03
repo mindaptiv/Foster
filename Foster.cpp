@@ -12,10 +12,13 @@
 
 using namespace std;
 using namespace Platform;
+using namespace Platform::Collections;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Foundation;
 using namespace Windows::System;
+using namespace Windows::Storage::Streams;
 using namespace concurrency;
+using namespace Windows::UI::Xaml::Media::Imaging;
 
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
@@ -1189,7 +1192,7 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
  //END Builders
  */
 
-void Centurion::Tory::grabUsers()
+void Centurion::Tory::grabUserInfo()
 {
 	//Sample code from Microsoft UWP Samples @ GitHub
 	// Populate the list of users.
@@ -1202,6 +1205,7 @@ void Centurion::Tory::grabUsers()
 		{
 			return create_task(user->GetPropertyAsync(KnownUserProperties::DisplayName));
 		});
+
 		return when_all(begin(tasks), end(tasks)).then([this, users](std::vector<Object^> results)
 		{
 				auto displayName = safe_cast<String^>(results[0]);
@@ -1209,23 +1213,65 @@ void Centurion::Tory::grabUsers()
 				if (displayName->IsEmpty())
 				{
 					//set cylon device name to default error case
-					cylonName = "0";
-
-					//TODO: remove all debugs
-					debug(displayName->Data());
+					this->CylonName = "0";
+					this->NonRoamableId = "0";
+					this->NameReady = true;
 				}
 				else
 				{
-					//TODO: remove all debugs
-					debug(displayName->Data());
-					debug(L"This first");
-
 					//set the name field for consumption by cylonStruct
 					this->CylonName = displayName;
+					this->NonRoamableId = users->GetAt(0)->NonRoamableId;
 					this->NameReady = true;
-					debug(cylonName->Data());
-					debug(L"This second");
-				}
+
+					User^ user = nullptr;
+					try
+					{
+						user = User::GetFromId(NonRoamableId);
+					}
+					catch (Exception^ ex)
+					{
+						debug(L"caught an exception creating user");
+					}
+
+					if (user != nullptr)
+					{
+						//Grab Avatar
+						auto task = create_task(user->GetPictureAsync(UserPictureSize::Size64x64));
+						task.then([this](IRandomAccessStreamReference^ streamReference)
+						{
+							if (streamReference != nullptr)
+							{
+								return create_task(streamReference->OpenReadAsync());
+							}
+							else
+							{
+								//TODO: set defaults for avatar
+
+							}
+						}).then([this](IRandomAccessStreamWithContentType^ stream)
+							{
+								if (stream != nullptr)
+								{
+									debug(L"Made it here");
+									debug(stream->ContentType->Data());
+									
+
+								}
+								else
+								{
+									//TODO: set defaults for avatar
+
+								}
+							}
+						);
+					}//END if
+					else
+					{
+						//TODO: set defaults for avatar
+
+					}
+				}//END else				
 		});
 	});
-}
+}//END grabUsername

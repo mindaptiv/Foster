@@ -99,10 +99,13 @@ namespace Centurion
 		Tory() 
 		{ 
 			cylonName = "0";
+			nonRoamableId = "0";
 			nameReady = false;
 			nameCopied = false;
+
+			grabUserInfo();
 		}
-		void grabUsers();
+		void grabUserInfo();
 		property Platform::String^ CylonName
 		{
 			Platform::String^ get() 
@@ -110,6 +113,19 @@ namespace Centurion
 			void set(Platform::String^ i) 
 				{ cylonName = i; }
 		}
+		property Platform::String^ NonRoamableId
+		{
+			Platform::String^ get()
+			{
+				return nonRoamableId;
+			}
+
+			void set(Platform::String^ i)
+			{
+				nonRoamableId = i;
+			}
+		}
+
 		property Platform::Boolean NameReady
 		{
 			Platform::Boolean get() 
@@ -131,6 +147,7 @@ namespace Centurion
 	private:
 		int nextUserNumber = 1;
 		Platform::String^ cylonName;
+		Platform::String^ nonRoamableId;
 		Platform::Boolean nameReady;
 		Platform::Boolean nameCopied;
 	};
