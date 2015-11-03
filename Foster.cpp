@@ -3,14 +3,34 @@
 //"Bad becomes good" - Tory Foster
 //josh@mindaptiv.com
 
+
+
+
 //includes
 #include "pch.h"  //TODO remove this if necessary for later deployments of Foster
 #include "Foster.h"
+
+using namespace std;
+using namespace Platform;
+using namespace Windows::Foundation::Collections;
+using namespace Windows::Foundation;
+using namespace Windows::System;
+using namespace concurrency;
+
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 #pragma comment(lib, "Ws2_32.lib")
 
 //Method definitions:
+//build a message to be logged to debug
+void debug(wstring str)
+{
+	//Credit to Community & anon @ StackOverflow for the og macro code
+	std::wostringstream os_;
+	os_ << str << "\n";
+	OutputDebugStringW(os_.str().c_str());
+}//END debug print
+
 //encoding:
 //via tfinniga @ stackoverflow
 std::string utf8_encode(const std::wstring &wstr)
@@ -23,7 +43,7 @@ std::string utf8_encode(const std::wstring &wstr)
 	int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
 	std::string strTo(size_needed, 0);
 	WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
-	
+
 	return strTo;
 }//end utf8 encoding
 
@@ -40,40 +60,26 @@ std::wstring utf8_decode(const std::string &str)
 	return wstrTo;
 }//end utf8 decoding
 
-//Producers:
-//for getting username
+ //Producers:
+ //for getting username
+
 void produceUsername(struct cylonStruct& tory)
 {
 	//Variable declaration
-	Platform::String^ managedUsername;
-	Windows::Foundation::IAsyncOperation<Platform::String^>^ operation;
-	const wchar_t* operationDataPointer;
-	std::wstring wideUsername;
+	//Centurion::Tory^ sludge = ref new Centurion::Tory();
 
-	//Retrieve username
-	operation			= Windows::System::UserProfile::UserInformation::GetDisplayNameAsync();
-	while(operation->Status == Windows::Foundation::AsyncStatus::Started)
-	{
-		//WAIT, YO
-	}
-	managedUsername = operation->GetResults();
-	operation->Close();
+	//Grab username
+	//Platform::String^ tester = sludge.cylonName;
+	//sludge->grabUsers();
 
-	//Convert username to std::wstring
-	operationDataPointer	= managedUsername->Data();
-	wideUsername			= std::wstring(operationDataPointer);
+	//if (sludge->NameReady == true)
+	//{
+		//debug(L"This last");
+		//debug(sludge->CylonName->Data());
+	//}
 
-	//TODO convert from wstring to string
-	
-
-	//check if retrieved username is empty string? (therefore UserInformation::NameAccessAllowed property would most likely be set to false)
-	if (wideUsername.length() <= 0)
-	{
-		wideUsername = L"0";
-	}
-
-	//Set username
-	tory.username = utf8_encode(wideUsername);
+//HAVE A HELPER CLASS SIT IN AN UPDATE METHOD AND BE CHECKED
+	//tory.username = utf8_encode(sludge.cylonName->Data());
 }
 //end getDisplayNameAsync
 
@@ -86,11 +92,11 @@ void produceTimeZone(struct cylonStruct& tory)
 	std::wstring			timezoneName;
 
 	//grab and convert bias
-	tzResult	= GetTimeZoneInformation(&tzinfo);
+	tzResult = GetTimeZoneInformation(&tzinfo);
 
 	//set bias
 	tory.timeZone = tzinfo.Bias;
-	
+
 	//Check DWORD value
 	if (tzResult == TIME_ZONE_ID_STANDARD)
 	{
@@ -131,12 +137,12 @@ void produceDateTime(struct cylonStruct& tory)
 	GetLocalTime(&st);
 
 	//grab values from SYSTEMTIME
-	tory.milliseconds	= st.wMilliseconds;
-	tory.seconds		= st.wSecond;
-	tory.minutes		= st.wMinute;
-	tory.hours			= st.wHour;
-	
-	if (SUNDAY<= st.wDayOfWeek && st.wDayOfWeek <= SATURDAY)
+	tory.milliseconds = st.wMilliseconds;
+	tory.seconds = st.wSecond;
+	tory.minutes = st.wMinute;
+	tory.hours = st.wHour;
+
+	if (SUNDAY <= st.wDayOfWeek && st.wDayOfWeek <= SATURDAY)
 	{
 		//0 = Sun, ..., 6 = Sat
 		tory.day = st.wDayOfWeek;
@@ -180,7 +186,7 @@ void produceDateTime(struct cylonStruct& tory)
 //end produceDateTime
 
 //populates tory's device name
-void produceDeviceName(struct cylonStruct& tory) 
+void produceDeviceName(struct cylonStruct& tory)
 {
 	//Variable declaration
 	int				result;
@@ -188,13 +194,13 @@ void produceDeviceName(struct cylonStruct& tory)
 	std::string		deviceName;
 	std::wstring	wDeviceName;
 	WSAData			wsa_data;
-	
+
 	//start WSA
 	WSAStartup(MAKEWORD(1, 1), &wsa_data);
 
 	//grab result
-	result		= gethostname(hostBuffer, MAX_PATH);
-	deviceName	= hostBuffer;
+	result = gethostname(hostBuffer, MAX_PATH);
+	deviceName = hostBuffer;
 
 	//check socket errors
 	int error;
@@ -212,7 +218,7 @@ void produceDeviceName(struct cylonStruct& tory)
 		wDeviceName = L"0";
 	}//end if
 
-	//set device name for tory
+	 //set device name for tory
 	tory.deviceName = utf8_encode(wDeviceName);
 }
 //end produceDeviceName
@@ -227,7 +233,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 
 	//Grab system info
 	GetNativeSystemInfo(&sysinfo);
-	
+
 	//Convert results into local values
 	//Convert architecture
 	if (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
@@ -268,7 +274,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	tf.processorCount = (UINT64)sysinfo.dwNumberOfProcessors;
 
 	//set allocation granularity
-	tf.allocationGranularity = (uint32_t)sysinfo.dwAllocationGranularity;
+	tf.allocationGranularity = (uint32_t)sysinfo.dwAllocationGranularity; //TODO: Check this
 
 	//grab default minimum CPU hertz
 	tf.hertz = minHertzz;
@@ -279,12 +285,12 @@ void produceProcessorInfo(struct cylonStruct& tf)
 HMODULE GetKernelModule()
 {
 	//NOTE: may not be permissable in Windows Store - hack to get into kernel32
-	MEMORY_BASIC_INFORMATION mbi = {0};
+	MEMORY_BASIC_INFORMATION mbi = { 0 };
 	VirtualQuery(VirtualQuery, &mbi, sizeof(mbi));
 	return reinterpret_cast<HMODULE>(mbi.AllocationBase);
 }//end GetKernelModule
 
-//for getting memory info
+ //for getting memory info
 void produceMemoryInfo(struct cylonStruct& tf)
 {
 	//variable declaration
@@ -293,9 +299,9 @@ void produceMemoryInfo(struct cylonStruct& tf)
 	HMODULE kernelModule = GetKernelModule();
 
 	//set unavailable fields
-	tf.lowMemory	= 0;
-	tf.threshold	= 0;
-	tf.bytesAvails	= 0;
+	tf.lowMemory = 0;
+	tf.threshold = 0;
+	tf.bytesAvails = 0;
 
 	//determine OS architecture
 	//use get process address to get a pointer to function if it exists
@@ -331,6 +337,7 @@ void produceMemoryInfo(struct cylonStruct& tf)
 //end produceMemoryInfo
 
 //for getting account picture
+/*
 void produceAccountPicture(struct cylonStruct& tf)
 {
 	//variable declaration
@@ -351,16 +358,16 @@ void produceAccountPicture(struct cylonStruct& tf)
 	//convert picture type to wstring
 	typeDataPointer = picture->FileType->Data();
 	pictureType = std::wstring(typeDataPointer);
-	
+
 	//convert picture type to UTF8
 	tf.pictureType = utf8_encode(pictureType);
 
 	//Convert picture path to wstring
 	typeDataPointer = picture->Path->Data();
-	picturePath     = std::wstring(typeDataPointer);
+	picturePath = std::wstring(typeDataPointer);
 
 	//convert and store picturePath to UTF8 in cylonStruct
-	tf.picturePath= utf8_encode(picturePath);
+	tf.picturePath = utf8_encode(picturePath);
 
 }
 //end produceAccountPicture
@@ -373,7 +380,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	Windows::Devices::Enumeration::DeviceClass deviceType;
 	unsigned int deviceStructType; //type variable in deviceStruct(s) to be built
 
-	//set deviceType operation filter based on type string
+								   //set deviceType operation filter based on type string
 	if (type == "all" || type == "All")
 	{
 		deviceType = Windows::Devices::Enumeration::DeviceClass::All;
@@ -433,32 +440,32 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	//have to repeat if logic here due to necessary waiting on operation, either repeat if-logic or repeat the operation code above
 	if (type == "all" || type == "All")
 	{
-		tf.installedDeviceCount	= devices->Size;
+		tf.installedDeviceCount = devices->Size;
 	}
 	else if (type == "AudioCapture" || type == "audioCapture")
 	{
 		//Store Size
-		tf.micCount				= devices->Size;
+		tf.micCount = devices->Size;
 	}//END IF
 	else if (type == "AudioRender" || type == "audioRender")
 	{
-		tf.speakerCount			= devices->Size;
+		tf.speakerCount = devices->Size;
 	}
 	else if (type == "PortableStorageDevice" || type == "portableStorageDevice")
 	{
-		tf.portableStorageCount		= devices->Size;
+		tf.portableStorageCount = devices->Size;
 	}
 	else if (type == "VideoCapture" || type == "videoCapture")
 	{
-		tf.videoCount			= devices->Size;
+		tf.videoCount = devices->Size;
 	}
 	else if (type == "ImageScanner" || type == "imageScanner")
 	{
-		tf.scannerCount			= devices->Size;
+		tf.scannerCount = devices->Size;
 	}
 	else if (type == "Location" || type == "location")
 	{
-		tf.locationCount		= devices->Size;
+		tf.locationCount = devices->Size;
 	}
 	else
 	{
@@ -481,7 +488,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		{
 			//build storage device
 			struct storageStruct storage = buildStorage(devices->GetAt(i), device);
-			
+
 			//insert into storages
 			tf.storages.insert(tf.storages.end(), storage);
 
@@ -495,7 +502,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 	}//END FOR
 }//END produce device information
 
-//produces device information for all types except the "all" filter
+ //produces device information for all types except the "all" filter
 void produceDeviceTypesInformation(struct cylonStruct& tf)
 {
 	//Grab collections and counts
@@ -505,7 +512,7 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	produceDeviceTypeInformation(tf, "ImageScanner");
 	produceDeviceTypeInformation(tf, "VideoCapture");
 	produceDeviceTypeInformation(tf, "PortableStorageDevice");
-	
+
 	//Grab primary display device
 	produceDisplayInformation(tf);
 
@@ -517,7 +524,9 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
 }//END produce device types information
-
+*/
+ 
+/*
 //produces the device and display structs for the primary monitor
 void produceDisplayInformation(struct cylonStruct& tf)
 {
@@ -539,7 +548,7 @@ void produceDisplayInformation(struct cylonStruct& tf)
 
 	//Build display device
 	displayDevice = buildDisplay(superDevice, displayInformation);
-
+*/
 	//TODO readd this later and test more extensively
 	/*
 	//Get Color Profile
@@ -547,40 +556,40 @@ void produceDisplayInformation(struct cylonStruct& tf)
 
 	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
 	{
-		//WAIT, YO
+	//WAIT, YO
 	}
 	resultStream = operation->GetResults();
 	operation->Close();
-	
+
 	reader = ref new Windows::Storage::Streams::DataReader(resultStream);
 	Windows::Storage::Streams::DataReaderLoadOperation^ readOperation = reader->LoadAsync(static_cast<unsigned int>(resultStream->Size));
 	while (readOperation->Status == Windows::Foundation::AsyncStatus::Started)
 	{
-		//WAIT, YO
+	//WAIT, YO
 	}
-	
+
 	if (reader != nullptr)
 	{
-		//read bytes
-		bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
-		reader->ReadBytes(bufferBytes);
-		displayDevice.colorData		= bufferBytes->Data;
-		displayDevice.colorLength	= bufferBytes->Length;
+	//read bytes
+	bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
+	reader->ReadBytes(bufferBytes);
+	displayDevice.colorData		= bufferBytes->Data;
+	displayDevice.colorLength	= bufferBytes->Length;
 	}
 	else
 	{
-		displayDevice.colorData		= (unsigned char*) "0";
-		displayDevice.colorLength	= 0;
+	displayDevice.colorData		= (unsigned char*) "0";
+	displayDevice.colorLength	= 0;
 	}
 	*/
-
+/*
 	//Insert super/parent into devices lists
 	displayDevice.superDevice.displayIndex = tf.displayDevices.size();
-	tf.displayDevices.insert(tf.displayDevices.end(), displayDevice); 
+	tf.displayDevices.insert(tf.displayDevices.end(), displayDevice);
 	tf.detectedDevices.insert(tf.detectedDevices.end(), displayDevice.superDevice);
 }//END produceDisplayInformation
 
-//produces information about pointer devices
+ //produces information about pointer devices
 void produceMouseInformation(struct cylonStruct& tf)
 {
 	//Variable Declaration
@@ -627,7 +636,7 @@ void produceMouseInformation(struct cylonStruct& tf)
 			tf.mice.anyLeftRightSwapped = false;
 		}
 
-		tf.mice.maxNumberOfButons			= mouseStats.NumberOfButtons;
+		tf.mice.maxNumberOfButons = mouseStats.NumberOfButtons;
 	}
 }
 
@@ -671,7 +680,7 @@ void produceControllerInformation(struct cylonStruct& tf)
 		result = XInputGetState(userIndex, &state);
 
 		if (result == ERROR_SUCCESS)
-		{	
+		{
 			//build device struct
 			struct deviceStruct device = buildDevice(deviceInfo, CONTROLLER_TYPE);
 
@@ -690,8 +699,39 @@ void produceControllerInformation(struct cylonStruct& tf)
 
 	}//END FOR
 }//END produceControllerInfo
+*/
 
-//produce Tory
+
+
+//for logging
+void produceLog(struct cylonStruct& tf)
+{
+	std::wostringstream os_;
+	os_ << "Cylon @: " << &tf << endl
+		<< "Username: " << utf8_decode(tf.username) << endl
+		<< "Device Name: " << utf8_decode(tf.deviceName) << endl
+		<< "Timestamp: " << tf.day << ", " << tf.month << "/" << tf.day << "/" << tf.year << " " << tf.hours << ":" << tf.minutes << ":" << tf.seconds << ":" << tf.milliseconds << endl
+		<< "Profile Picture Location: " << utf8_decode(tf.picturePath) << " Type: " << utf8_decode(tf.pictureType) << endl
+		<< "Processor Architecture: " << utf8_decode(tf.architecture) << endl
+		<< "Processor Count: " << tf.processorCount << endl
+		<< "Processor Level: " << tf.processorLevel << endl
+		<< "Processor Clock Speed: "<< tf.hertz<< "Hz" << endl
+		<< "OS Architecture: " << tf.osArchitecture << endl
+		<< "Installed Memory: " << tf.memoryBytes << endl
+		<< "Available Memory: " << tf.bytesAvails << endl
+		<< "Low Memory Threshold: " << tf.threshold << endl
+		<< "Low Memory? " << tf.lowMemory << endl
+		<< "Page Size: " << tf.pageSize << endl
+		<< "Allocation Granularity: " << tf.allocationGranularity << endl
+		<< "Min/Max App Address: "<< tf.minAppAddress << "/" << tf.maxAppAddress << endl
+		<< "Detected Device Count: "<< tf.detectedDeviceCount << endl
+		<< "Error: " << tf.error <<endl
+		;
+
+	OutputDebugStringW(os_.str().c_str());
+}//END produceLog
+
+ //produce Tory
 void produceTory(struct cylonStruct& tory)
 {
 	//Clear pre-existing lists
@@ -708,26 +748,30 @@ void produceTory(struct cylonStruct& tory)
 	//time zone
 	produceTimeZone(tory);
 
-	//date and time
+	//date and timef
 	produceDateTime(tory);
 
 	//processor
 	produceProcessorInfo(tory);
 
 	//picture
-	produceAccountPicture(tory);
+/*	produceAccountPicture(tory);
 
 	//devices
 	produceDeviceTypesInformation(tory);
-
+*/
 	//memory
-	produceMemoryInfo(tory);
+	produceMemoryInfo(tory); 
+
+	//log
+	produceLog(tory);
 }
 //end produce tory 
 //END producers
 
 //Builders
 //build Tory
+/*
 struct cylonStruct buildTory()
 {
 	//Variable Declartion
@@ -747,7 +791,7 @@ struct cylonStruct buildTory()
 
 	//processor
 	produceProcessorInfo(tory);
-	
+
 	//picture
 	produceAccountPicture(tory);
 
@@ -757,12 +801,16 @@ struct cylonStruct buildTory()
 	//memory
 	produceMemoryInfo(tory);
 
+	//log
+	produceLog(tory);
+
 	//return
 	return tory;
 }
 //end build tory
 
 //build a storageStruct with given data
+
 struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, struct deviceStruct superDevice)
 {
 	//Variable declaration
@@ -779,17 +827,18 @@ struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformati
 
 	//set unavailable fields
 	storage.bytesAvails = 0;
-	storage.totalBytes  = 0;
-	storage.isEmulated  = 0;
+	storage.totalBytes = 0;
+	storage.isEmulated = 0;
 
 	//return struct
 	return storage;
 }
 
+//TODO: restore all commented out producers
+
 //build a device struct with given data
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType)
 {
-	//Variable Decalaration
 	struct deviceStruct device;
 	std::wstring error = L"0";
 
@@ -800,17 +849,17 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	device.vendorID = 0;
 
 	//set to zero for now, modify later if necessary
-	device.displayIndex		= 0;
-	device.controllerIndex	= 0;
-	device.sensorsIndex     = 0;
-	device.storageIndex     = 0;
-	device.orientation		= 0;
+	device.displayIndex = 0;
+	device.controllerIndex = 0;
+	device.sensorsIndex = 0;
+	device.storageIndex = 0;
+	device.orientation = 0;
 
 	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == DISPLAY_TYPE || device.deviceType == KEYBOARD_TYPE || device.deviceType == MOUSE_TYPE || device.deviceType == CONTROLLER_TYPE)
 	{
 		//set errors/unknown values
-		device.name	 = utf8_encode(error);
+		device.name = utf8_encode(error);
 		device.id = utf8_encode(error);
 		device.inDock = false;
 		device.inLid = false;
@@ -819,7 +868,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		//default these to true 
 		device.isDefault = true;
 		device.isEnabled = true;
-		
+
 		//return
 		return device;
 	}
@@ -831,10 +880,10 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		device.name = utf8_encode(error);
 	}
 	else
-	{	
+	{
 		device.name = utf8_encode(deviceInfo->Name->Data());
 	}//END if Name Empty
-	
+
 	if (deviceInfo->Id->IsEmpty())
 	{
 		device.id = utf8_encode(error);
@@ -868,7 +917,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 			device.inLid = false;
 		}//END if inLid
 
-		//set the panel location of the device (if available)
+		 //set the panel location of the device (if available)
 		if (deviceInfo->EnclosureLocation->Panel.Equals(Windows::Devices::Enumeration::Panel::Top))
 		{
 			device.panelLocation = TOP_PANEL;
@@ -927,8 +976,8 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		//includes empty, false, etc.
 		device.isEnabled = false;
 	}//END if IsEnabled
-	
-	//return
+
+	 //return
 	return device;
 }
 //END build device
@@ -946,16 +995,16 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	//preferred app orientation
 	if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.rotationPreference		= NO_ROTATION;
-	
+		displayDevice.rotationPreference = NO_ROTATION;
+
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.rotationPreference		= LANDSCAPE;
+		displayDevice.rotationPreference = LANDSCAPE;
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.rotationPreference		= PORTRAIT;
+		displayDevice.rotationPreference = PORTRAIT;
 
 	}
 	else if (displayInformation->AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
@@ -973,40 +1022,40 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 		displayDevice.rotationPreference = NO_ROTATION;
 	}//END if orientation
 
-	//current monitor orientation
+	 //current monitor orientation
 	if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::None)
 	{
-		displayDevice.currentRotation			= NO_ROTATION;
-		displayDevice.superDevice.orientation	= NO_ROTATION;
+		displayDevice.currentRotation = NO_ROTATION;
+		displayDevice.superDevice.orientation = NO_ROTATION;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Landscape)
 	{
-		displayDevice.currentRotation			= LANDSCAPE;
-		displayDevice.superDevice.orientation	= LANDSCAPE;
+		displayDevice.currentRotation = LANDSCAPE;
+		displayDevice.superDevice.orientation = LANDSCAPE;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::Portrait)
 	{
-		displayDevice.currentRotation			= PORTRAIT;
-		displayDevice.superDevice.orientation	= PORTRAIT;
+		displayDevice.currentRotation = PORTRAIT;
+		displayDevice.superDevice.orientation = PORTRAIT;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::LandscapeFlipped)
 	{
-		displayDevice.currentRotation			= FLIPPED_LANDSCAPE;
-		displayDevice.superDevice.orientation	= FLIPPED_LANDSCAPE;
+		displayDevice.currentRotation = FLIPPED_LANDSCAPE;
+		displayDevice.superDevice.orientation = FLIPPED_LANDSCAPE;
 	}
 	else if (displayInformation->CurrentOrientation == Windows::Graphics::Display::DisplayOrientations::PortraitFlipped)
 	{
-		displayDevice.currentRotation			= FLIPPED_PORTRAIT;
-		displayDevice.superDevice.orientation	= FLIPPED_PORTRAIT;
+		displayDevice.currentRotation = FLIPPED_PORTRAIT;
+		displayDevice.superDevice.orientation = FLIPPED_PORTRAIT;
 	}
 	else
 	{
 		//error case
-		displayDevice.currentRotation			= NO_ROTATION;
-		displayDevice.superDevice.orientation	= NO_ROTATION;
+		displayDevice.currentRotation = NO_ROTATION;
+		displayDevice.superDevice.orientation = NO_ROTATION;
 	}//END current monitor orientation
 
-	//native monitor orientation
+	 //native monitor orientation
 	if (displayInformation->NativeOrientation == Windows::Graphics::Display::DisplayOrientations::None)
 	{
 		displayDevice.nativeRotation = NO_ROTATION;
@@ -1033,10 +1082,10 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 		displayDevice.nativeRotation = NO_ROTATION;
 	}//END if native monitor orientation
 
-	//DPI
-	displayDevice.logicalDPI	= displayInformation->LogicalDpi;
-	displayDevice.rawDPIX		= displayInformation->RawDpiX;
-	displayDevice.rawDPIY		= displayInformation->RawDpiY;
+	 //DPI
+	displayDevice.logicalDPI = displayInformation->LogicalDpi;
+	displayDevice.rawDPIX = displayInformation->RawDpiX;
+	displayDevice.rawDPIY = displayInformation->RawDpiY;
 
 	//Stereoscopic 3D
 	displayDevice.isStereoscopicEnabled = displayInformation->StereoEnabled;
@@ -1090,18 +1139,18 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 {
 	//Variable Declaration
 	struct controllerStruct controller;
-	
+
 	//Normalize Trigger values
 	float oldTriggerMin = (float)0.0;
 	float oldTriggerMax = (float)255.0;
-	
+
 	float newTriggerMin = (float)0.0;
 	float newTriggerMax = (float)1.0;
 
 	float newTriggerRange = (float)1.0;
 	float oldTriggerRange = (float)255.0;
-	
-	float oldTriggerLeft  = (float)state.Gamepad.bLeftTrigger;
+
+	float oldTriggerLeft = (float)state.Gamepad.bLeftTrigger;
 	float oldTriggerRight = (float)state.Gamepad.bRightTrigger;
 
 	//Get/set new trigger values
@@ -1124,17 +1173,59 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	float oldThumbRightY = (float)state.Gamepad.sThumbRY;
 
 	//Get/set new thumbstick values
-	controller.thumbLeftX = (float)((( (oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange ) + newThumbMin );
+	controller.thumbLeftX = (float)((((oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 	controller.thumbLeftY = (float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 	controller.thumbRightX = (float)((((oldThumbRightX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 	controller.thumbRightY = (float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
 
 	//Set properties
-	controller.superDevice  = superDevice; //set parent
-	controller.userIndex	= (unsigned int)userIndex;
-	controller.buttons		= state.Gamepad.wButtons;
+	controller.superDevice = superDevice; //set parent
+	controller.userIndex = (unsigned int)userIndex;
+	controller.buttons = state.Gamepad.wButtons;
 	controller.packetNumber = state.dwPacketNumber;
 
 	return controller;
 }//END build controller
-//END Builders
+ //END Builders
+ */
+
+void Centurion::Tory::grabUsers()
+{
+	//Sample code from Microsoft UWP Samples @ GitHub
+	// Populate the list of users.
+	create_task(User::FindAllAsync()).then([this](IVectorView<User^>^ users)
+	{
+	
+		// Get the display name of each user.
+		std::vector<task<Object^>> tasks(users->Size);
+		std::transform(begin(users), end(users), begin(tasks), [](User^ user)
+		{
+			return create_task(user->GetPropertyAsync(KnownUserProperties::DisplayName));
+		});
+		return when_all(begin(tasks), end(tasks)).then([this, users](std::vector<Object^> results)
+		{
+				auto displayName = safe_cast<String^>(results[0]);
+				// Choose a generic name if we do not have access to the actual name.
+				if (displayName->IsEmpty())
+				{
+					//set cylon device name to default error case
+					cylonName = "0";
+
+					//TODO: remove all debugs
+					debug(displayName->Data());
+				}
+				else
+				{
+					//TODO: remove all debugs
+					debug(displayName->Data());
+					debug(L"This first");
+
+					//set the name field for consumption by cylonStruct
+					this->CylonName = displayName;
+					this->NameReady = true;
+					debug(cylonName->Data());
+					debug(L"This second");
+				}
+		});
+	});
+}
