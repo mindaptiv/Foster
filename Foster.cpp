@@ -18,7 +18,6 @@ using namespace Windows::Foundation;
 using namespace Windows::System;
 using namespace Windows::Storage::Streams;
 using namespace concurrency;
-using namespace Windows::UI::Xaml::Media::Imaging;
 
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
@@ -336,45 +335,46 @@ void produceMemoryInfo(struct cylonStruct& tf)
 		tf.memoryBytes = 1000000000;
 		tf.osArchitecture = 32;
 	}
+
+	//New for Win10/Sinew Memory Manager get AppMemoryReport
+	AppMemoryReport^ report = MemoryManager::GetAppMemoryReport();
+
+	std::wostringstream os_;
+	os_ << "Peak Private Commit Usage: " << report->PeakPrivateCommitUsage << endl
+		<< "Private Commit Usage: " << report->PrivateCommitUsage << endl
+		<< "Total Commit Limit: " << report->TotalCommitLimit << endl
+		<< "Total Commit Usage: " << report->TotalCommitUsage << endl 
+		;
+
+	OutputDebugStringW(os_.str().c_str());
+	
+	//Grab memory info for cylonStruct
+	tf.memoryBytes = (uint64_t) report->TotalCommitLimit;
+	float lowMemory = (float)0.99;
+	tf.threshold = (uint64_t) (lowMemory * tf.memoryBytes);
+	tf.bytesAvails = (uint64_t)(report->TotalCommitLimit - report->TotalCommitUsage);
+	
+	//Calculate low memory
+	if (tf.bytesAvails / tf.memoryBytes >= lowMemory)
+	{
+		tf.lowMemory = 1;
+	}
+	else
+	{
+		tf.lowMemory = 0;
+	}//END if lowMemory
 }
 //end produceMemoryInfo
 
-//for getting account picture
-/*
+//for getting account picture info
 void produceAccountPicture(struct cylonStruct& tf)
 {
-	//variable declaration
-	Windows::System::UserProfile::AccountPictureKind kind = Windows::System::UserProfile::AccountPictureKind::SmallImage;
-	Windows::Storage::IStorageFile^ picture;
-	std::wstring pictureType;
-	std::wstring picturePath;
-	const wchar_t* typeDataPointer;
-
-	//retrieve picture
-	picture = Windows::System::UserProfile::UserInformation::GetAccountPicture(kind);
-
-	//set picture
-	Windows::Storage::IStorageFile^* tempPic;
-	tempPic = &picture;
-	tf.pictureLocation = (uintptr_t)tempPic;
-
-	//convert picture type to wstring
-	typeDataPointer = picture->FileType->Data();
-	pictureType = std::wstring(typeDataPointer);
-
-	//convert picture type to UTF8
-	tf.pictureType = utf8_encode(pictureType);
-
-	//Convert picture path to wstring
-	typeDataPointer = picture->Path->Data();
-	picturePath = std::wstring(typeDataPointer);
-
-	//convert and store picturePath to UTF8 in cylonStruct
-	tf.picturePath = utf8_encode(picturePath);
-
+	//Set type
+	tf.pictureType = ".png";
 }
 //end produceAccountPicture
 
+/*
 void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 {
 	//Variable Declaration
@@ -504,6 +504,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		int one = 1;
 	}//END FOR
 }//END produce device information
+
 
  //produces device information for all types except the "all" filter
 void produceDeviceTypesInformation(struct cylonStruct& tf)
@@ -714,13 +715,13 @@ void produceLog(struct cylonStruct& tf)
 		<< "Username: " << utf8_decode(tf.username) << endl
 		<< "Device Name: " << utf8_decode(tf.deviceName) << endl
 		<< "Timestamp: " << tf.day << ", " << tf.month << "/" << tf.day << "/" << tf.year << " " << tf.hours << ":" << tf.minutes << ":" << tf.seconds << ":" << tf.milliseconds << endl
-		<< "Profile Picture Location: " << utf8_decode(tf.picturePath) << " Type: " << utf8_decode(tf.pictureType) << endl
+		<< "Profile Picture Location: " << hex<< tf.pictureLocation <<dec<< " Type: " << utf8_decode(tf.pictureType) << " Path: " << utf8_decode(tf.picturePath) << endl
 		<< "Processor Architecture: " << utf8_decode(tf.architecture) << endl
 		<< "Processor Count: " << tf.processorCount << endl
 		<< "Processor Level: " << tf.processorLevel << endl
 		<< "Processor Clock Speed: "<< tf.hertz<< "Hz" << endl
 		<< "OS Architecture: " << tf.osArchitecture << endl
-		<< "Installed Memory: " << tf.memoryBytes << endl
+		<< "Total Memory: " << tf.memoryBytes << endl
 		<< "Available Memory: " << tf.bytesAvails << endl
 		<< "Low Memory Threshold: " << tf.threshold << endl
 		<< "Low Memory? " << tf.lowMemory << endl
@@ -758,10 +759,10 @@ void produceTory(struct cylonStruct& tory)
 	produceProcessorInfo(tory);
 
 	//picture
-/*	produceAccountPicture(tory);
+	produceAccountPicture(tory);
 
 	//devices
-	produceDeviceTypesInformation(tory);
+/*	produceDeviceTypesInformation(tory);
 */
 	//memory
 	produceMemoryInfo(tory); 
@@ -1215,14 +1216,18 @@ void Centurion::Tory::grabUserInfo()
 					//set cylon device name to default error case
 					this->CylonName = "0";
 					this->NonRoamableId = "0";
-					this->NameReady = true;
+					PictureStream = nullptr;
+					PictureLocation = 0;
+
+					//Announce that stuff is ready for copying
+					InfoReady = true;
+
 				}
 				else
 				{
 					//set the name field for consumption by cylonStruct
 					this->CylonName = displayName;
 					this->NonRoamableId = users->GetAt(0)->NonRoamableId;
-					this->NameReady = true;
 
 					User^ user = nullptr;
 					try
@@ -1246,32 +1251,44 @@ void Centurion::Tory::grabUserInfo()
 							}
 							else
 							{
-								//TODO: set defaults for avatar
-
+								return create_task([]() -> IRandomAccessStreamWithContentType^ {return nullptr; });
 							}
 						}).then([this](IRandomAccessStreamWithContentType^ stream)
 							{
 								if (stream != nullptr)
 								{
-									debug(L"Made it here");
 									debug(stream->ContentType->Data());
-									
+									PictureStream = stream;
+									IRandomAccessStreamWithContentType^* tempPic = &stream;
+									PictureLocation = (uintptr_t)tempPic;
 
+									//Announce that data is ready for copying
+									InfoReady = true;
 								}
 								else
 								{
-									//TODO: set defaults for avatar
+									//set defaults for avatar
+									PictureLocation = 0;
+									PictureStream = nullptr;
 
+									//Announce that data is ready for copying
+									InfoReady = true;
 								}
 							}
 						);
-					}//END if
+					}//END if user is null
 					else
 					{
-						//TODO: set defaults for avatar
+						//set defaults for avatar
+						PictureLocation = 0;
+						PictureStream = nullptr;
 
+						//Announce that data is ready for copying
+						InfoReady = true;
 					}
-				}//END else				
+				}//END else	if display name not empty
+
+		
 		});
 	});
 }//END grabUsername

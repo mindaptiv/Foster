@@ -14,6 +14,7 @@
 #include <iostream>
 #include "Cybro.h"
 #include <collection.h>
+#include <limits.h>
 
 //includes for windows functionality
 #include <WinSock2.h>
@@ -21,6 +22,9 @@
 #include <windows.storage.h>
 #include <ppltasks.h>
 #include <sstream>
+#include <Windows.h>
+
+using namespace Windows::Storage::Streams;
 
 //definitions
 //via Ted's Blog
@@ -100,8 +104,8 @@ namespace Centurion
 		{ 
 			cylonName = "0";
 			nonRoamableId = "0";
-			nameReady = false;
-			nameCopied = false;
+			infoReady = false;
+			infoCopied = false;
 
 			grabUserInfo();
 		}
@@ -126,29 +130,54 @@ namespace Centurion
 			}
 		}
 
-		property Platform::Boolean NameReady
+		property Platform::Boolean InfoReady
 		{
 			Platform::Boolean get() 
-				{ return nameReady; }
+				{ return infoReady; }
 			void set(Platform::Boolean i) 
-				{ nameReady = i; }
+				{ infoReady = i; }
 		}
-		property Platform::Boolean NameCopied
+		property Platform::Boolean InfoCopied
 		{
 			Platform::Boolean get()
 			{
-				return nameCopied;
+				return infoCopied;
 			}
 			void set(Platform::Boolean i)
 			{
-				nameCopied = i;
+				infoCopied = i;
 			}
 		}
+		property IRandomAccessStreamWithContentType^ PictureStream
+		{
+			IRandomAccessStreamWithContentType^ get()
+			{
+				return pictureStream;
+			}
+			void set(IRandomAccessStreamWithContentType^ i)
+			{
+				pictureStream = i;
+			}
+		}
+		property uintptr_t PictureLocation
+		{
+			uintptr_t get()
+			{
+				return pictureLocation;
+			}
+			void set(uintptr_t i)
+			{
+				pictureLocation = i;
+			}
+		}
+	
 	private:
 		int nextUserNumber = 1;
 		Platform::String^ cylonName;
 		Platform::String^ nonRoamableId;
-		Platform::Boolean nameReady;
-		Platform::Boolean nameCopied;
+		Platform::Boolean infoReady;
+		Platform::Boolean infoCopied;
+		IRandomAccessStreamWithContentType^ pictureStream;
+		uintptr_t pictureLocation;
 	};
 }
