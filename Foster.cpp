@@ -338,15 +338,6 @@ void produceMemoryInfo(struct cylonStruct& tf)
 
 	//New for Win10/Sinew Memory Manager get AppMemoryReport
 	AppMemoryReport^ report = MemoryManager::GetAppMemoryReport();
-
-	std::wostringstream os_;
-	os_ << "Peak Private Commit Usage: " << report->PeakPrivateCommitUsage << endl
-		<< "Private Commit Usage: " << report->PrivateCommitUsage << endl
-		<< "Total Commit Limit: " << report->TotalCommitLimit << endl
-		<< "Total Commit Usage: " << report->TotalCommitUsage << endl 
-		;
-
-	OutputDebugStringW(os_.str().c_str());
 	
 	//Grab memory info for cylonStruct
 	tf.memoryBytes = (uint64_t) report->TotalCommitLimit;
@@ -704,8 +695,6 @@ void produceControllerInformation(struct cylonStruct& tf)
 	}//END FOR
 }//END produceControllerInfo
 */
-
-
 
 //for logging
 void produceLog(struct cylonStruct& tf)
@@ -1287,8 +1276,27 @@ void Centurion::Tory::grabUserInfo()
 						InfoReady = true;
 					}
 				}//END else	if display name not empty
-
-		
 		});
 	});
 }//END grabUsername
+
+//Call this method in your code to see if the Tory helper class has finished its asynchronous calls and has data ready to be written to the given cylonStruct
+void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
+{
+	if (tory->InfoReady == true && tory->InfoCopied == false)
+	{
+		//copy
+		tf.username = utf8_encode(tory->CylonName->Data());
+		tf.pictureLocation = tory->PictureLocation;
+
+		//Set path where Win10 holds profile pictures
+		//Credit to AnandK@TWC on @ The Windows Club for path info
+		tf.picturePath = "C:/Users/" + tf.username + "/AppData/Roaming/Microsoft/Windows/AccountPictures/";
+
+		//prevent further copying
+		tory->InfoCopied = true;
+
+		//print a new log TODO remove
+		produceLog(tf);
+	}//END if info ready and not already copied
+}

@@ -181,3 +181,6 @@ namespace Centurion
 		uintptr_t pictureLocation;
 	};
 }
+
+//sync a cylonStruct with a Tory 
+void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory);
