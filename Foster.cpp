@@ -365,7 +365,7 @@ void produceAccountPicture(struct cylonStruct& tf)
 }
 //end produceAccountPicture
 
-/*
+
 void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 {
 	//Variable Declaration
@@ -480,8 +480,9 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		//if necessary, build a storage device
 		if (deviceStructType == STORAGE_TYPE)
 		{
+			//TODO: restore builder
 			//build storage device
-			struct storageStruct storage = buildStorage(devices->GetAt(i), device);
+			struct storageStruct storage;// = buildStorage(devices->GetAt(i), device);
 
 			//insert into storages
 			tf.storages.insert(tf.storages.end(), storage);
@@ -508,18 +509,20 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	produceDeviceTypeInformation(tf, "VideoCapture");
 	produceDeviceTypeInformation(tf, "PortableStorageDevice");
 
+	//TODO: restore producer calls
+
 	//Grab primary display device
-	produceDisplayInformation(tf);
+//	produceDisplayInformation(tf);
 
 	//Grab Keyboard, Mouse, Controllers
-	produceKeyboardInformation(tf);
-	produceMouseInformation(tf);
-	produceControllerInformation(tf);
+//	produceKeyboardInformation(tf);
+//	produceMouseInformation(tf);
+//	produceControllerInformation(tf);
 
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
 }//END produce device types information
-*/
+
  
 /*
 //produces the device and display structs for the primary monitor
@@ -718,8 +721,36 @@ void produceLog(struct cylonStruct& tf)
 		<< "Allocation Granularity: " << tf.allocationGranularity << endl
 		<< "Min/Max App Address: "<< tf.minAppAddress << "/" << tf.maxAppAddress << endl
 		<< "Detected Device Count: "<< tf.detectedDeviceCount << endl
-		<< "Error: " << tf.error <<endl
+		<< "Error: " << tf.error <<endl<<endl
+		<< "Devices: "<<endl
 		;
+
+	for (list<deviceStruct>::const_iterator iterator = tf.detectedDevices.begin(), end = tf.detectedDevices.end(); iterator != end; ++iterator)
+	{
+		os_
+			<< "\t" << "Name: " << utf8_decode(iterator->name) << endl
+			<< "\t" << "Type: " << iterator->deviceType << endl
+			<< "\t" << "Vendor ID: " << endl
+			<< "\t" << "ID: " << utf8_decode(iterator->id) << endl
+			<< "\t" << "Orientation: " << iterator->orientation << endl
+			<< "\t" << "USB Bus: " << endl
+			<< "\t" << "UDev Device #: " << endl
+			<< "\t" << "Panel Location: " << iterator->panelLocation << endl
+			<< "\t" << "In Lid: " << iterator->inLid << endl
+			<< "\t" << "In Dock: " << iterator->inDock << endl
+			<< "\t" << "Is Default: " << iterator->isDefault <<endl
+			<< "\t" << "Is Enabled: " <<iterator->isEnabled <<endl
+			<< "\t" << "Controller Index: " << iterator->controllerIndex << endl
+			<< "\t" << "Storage Index: " << iterator->storageIndex << endl
+			<< "\t" << "Display Index: "<<iterator->displayIndex << endl
+
+			<<endl
+			;
+	}	
+
+	os_ << endl << "Controllers: " << endl;
+
+
 
 	OutputDebugStringW(os_.str().c_str());
 }//END produceLog
@@ -751,8 +782,8 @@ void produceTory(struct cylonStruct& tory)
 	produceAccountPicture(tory);
 
 	//devices
-/*	produceDeviceTypesInformation(tory);
-*/
+	produceDeviceTypesInformation(tory);
+
 	//memory
 	produceMemoryInfo(tory); 
 
@@ -826,7 +857,7 @@ struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformati
 	//return struct
 	return storage;
 }
-
+*/
 //TODO: restore all commented out producers
 
 //build a device struct with given data
@@ -974,7 +1005,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	return device;
 }
 //END build device
-
+/*
 //builds a displayStruct from a given deviceStruct
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation)
 {
