@@ -182,7 +182,7 @@ struct mouseStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
 
-									 //properties of available mice
+	//properties of available mice
 	uint32_t anyLeftRightSwapped;
 	uint32_t anyVerticalWheelPresent;
 	uint32_t anyHorizontalWheelPresent;

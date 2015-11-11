@@ -494,7 +494,7 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 
 	//Grab Keyboard, Mouse, Controllers
 	produceKeyboardInformation(tf);
-//	produceMouseInformation(tf);
+	produceMouseInformation(tf);
 	produceControllerInformation(tf);
 
 	//Grab total count
@@ -565,7 +565,6 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	tf.detectedDevices.insert(tf.detectedDevices.end(), displayDevice.superDevice);
 }//END produceDisplayInformation
 
-/*
  //produces information about pointer devices
 void produceMouseInformation(struct cylonStruct& tf)
 {
@@ -616,7 +615,7 @@ void produceMouseInformation(struct cylonStruct& tf)
 		tf.mice.maxNumberOfButons = mouseStats.NumberOfButtons;
 	}
 }
-*/
+
 //create deviceStruct for keyboard
 void produceKeyboardInformation(struct cylonStruct& tf)
 {
@@ -758,6 +757,11 @@ void produceLog(struct cylonStruct& tf)
 			;
 	}
 
+	os_ << "Mouse Stats: " << endl
+		<< "\t" << "Left/Right Swapped: " << tf.mice.anyLeftRightSwapped << endl
+		<< "\t" << "Vertical Wheel: " << tf.mice.anyVerticalWheelPresent << endl
+		<< "\t" << "Horizontal Wheel: " << tf.mice.anyHorizontalWheelPresent << endl
+		<< "\t" << "Button Count: " << tf.mice.maxNumberOfButons << endl;
 
 	OutputDebugStringW(os_.str().c_str());
 }//END produceLog
