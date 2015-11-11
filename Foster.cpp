@@ -493,7 +493,7 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	produceDisplayInformation(tf);
 
 	//Grab Keyboard, Mouse, Controllers
-//	produceKeyboardInformation(tf);
+	produceKeyboardInformation(tf);
 //	produceMouseInformation(tf);
 	produceControllerInformation(tf);
 
@@ -616,7 +616,7 @@ void produceMouseInformation(struct cylonStruct& tf)
 		tf.mice.maxNumberOfButons = mouseStats.NumberOfButtons;
 	}
 }
-
+*/
 //create deviceStruct for keyboard
 void produceKeyboardInformation(struct cylonStruct& tf)
 {
@@ -637,7 +637,7 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 		tf.detectedDevices.insert(tf.detectedDevices.end(), keyboard);
 	}//END if
 }
-//end produce Keyboard information */
+//end produce Keyboard information
 
 //grabs information for (up to) 4 XInput controllers
 void produceControllerInformation(struct cylonStruct& tf)
