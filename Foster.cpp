@@ -63,28 +63,6 @@ std::wstring utf8_decode(const std::string &str)
 }//end utf8 decoding
 
  //Producers:
- //for getting username
-
-void produceUsername(struct cylonStruct& tory)
-{
-	//Variable declaration
-	//Centurion::Tory^ sludge = ref new Centurion::Tory();
-
-	//Grab username
-	//Platform::String^ tester = sludge.cylonName;
-	//sludge->grabUsers();
-
-	//if (sludge->NameReady == true)
-	//{
-		//debug(L"This last");
-		//debug(sludge->CylonName->Data());
-	//}
-
-//HAVE A HELPER CLASS SIT IN AN UPDATE METHOD AND BE CHECKED
-	//tory.username = utf8_encode(sludge.cylonName->Data());
-}
-//end getDisplayNameAsync
-
 //Fills cylonStruct with timezone name, UTC offset bias, and dst flag
 void produceTimeZone(struct cylonStruct& tory)
 {
@@ -512,19 +490,19 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	//TODO: restore producer calls
 
 	//Grab primary display device
-//	produceDisplayInformation(tf);
+	produceDisplayInformation(tf);
 
 	//Grab Keyboard, Mouse, Controllers
 //	produceKeyboardInformation(tf);
 //	produceMouseInformation(tf);
-//	produceControllerInformation(tf);
+	produceControllerInformation(tf);
 
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
 }//END produce device types information
 
  
-/*
+
 //produces the device and display structs for the primary monitor
 void produceDisplayInformation(struct cylonStruct& tf)
 {
@@ -546,7 +524,7 @@ void produceDisplayInformation(struct cylonStruct& tf)
 
 	//Build display device
 	displayDevice = buildDisplay(superDevice, displayInformation);
-*/
+
 	//TODO readd this later and test more extensively
 	/*
 	//Get Color Profile
@@ -580,13 +558,14 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	displayDevice.colorLength	= 0;
 	}
 	*/
-/*
+
 	//Insert super/parent into devices lists
 	displayDevice.superDevice.displayIndex = tf.displayDevices.size();
 	tf.displayDevices.insert(tf.displayDevices.end(), displayDevice);
 	tf.detectedDevices.insert(tf.detectedDevices.end(), displayDevice.superDevice);
 }//END produceDisplayInformation
 
+/*
  //produces information about pointer devices
 void produceMouseInformation(struct cylonStruct& tf)
 {
@@ -658,7 +637,7 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 		tf.detectedDevices.insert(tf.detectedDevices.end(), keyboard);
 	}//END if
 }
-//end produce Keyboard information
+//end produce Keyboard information */
 
 //grabs information for (up to) 4 XInput controllers
 void produceControllerInformation(struct cylonStruct& tf)
@@ -697,7 +676,6 @@ void produceControllerInformation(struct cylonStruct& tf)
 
 	}//END FOR
 }//END produceControllerInfo
-*/
 
 //for logging
 void produceLog(struct cylonStruct& tf)
@@ -743,13 +721,42 @@ void produceLog(struct cylonStruct& tf)
 			<< "\t" << "Controller Index: " << iterator->controllerIndex << endl
 			<< "\t" << "Storage Index: " << iterator->storageIndex << endl
 			<< "\t" << "Display Index: "<<iterator->displayIndex << endl
-
 			<<endl
 			;
 	}	
 
 	os_ << endl << "Controllers: " << endl;
 
+	for (list<controllerStruct>::const_iterator iterator = tf.controllers.begin(), end = tf.controllers.end(); iterator != end; ++iterator)
+	{
+		os_
+			<< "\t" << "User Index: " << iterator->userIndex << endl
+			<< "\t" << "Packet Number: " << iterator->packetNumber<<endl
+			<< "\t" << "Left Trigger: " <<iterator->leftTrigger <<endl
+			<< "\t" << "Right Trigger: " << iterator->rightTrigger <<endl
+			<< "\t" << "Left Thumb X: " << iterator->thumbLeftX <<endl
+			<< "\t" << "Left Thumb Y: " << iterator->thumbLeftY <<endl
+			<< "\t" << "Right Thumb X: " << iterator->thumbRightX <<endl
+			<< "\t" << "Right Thumb Y: " << iterator->thumbRightY << endl
+			<< endl
+			;
+	}
+
+	os_ << endl << "Displays: " << endl;
+	for (list<displayStruct>::const_iterator iterator = tf.displayDevices.begin(), end = tf.displayDevices.end(); iterator != end; ++iterator)
+	{
+		os_
+			<< "\t" << "Rotation Preference: " << iterator->rotationPreference << endl
+			<< "\t" << "Current Rotation: " << iterator->currentRotation << endl
+			<< "\t" << "Native Rotation: " << iterator->nativeRotation << endl
+			<< "\t" << "Stereoscopic Enabled? " << iterator->isStereoscopicEnabled << endl
+			<< "\t" << "Resolution Scale: " << iterator->resolutionScale << endl
+			<< "\t" << "Logical DPI: " << iterator->logicalDPI << endl
+			<< "\t" << "Raw DPI X: " << iterator->rawDPIX << endl
+			<< "\t" << "Raw DPI Y: " << iterator->rawDPIY << endl
+			<< endl
+			;
+	}
 
 
 	OutputDebugStringW(os_.str().c_str());
@@ -762,9 +769,6 @@ void produceTory(struct cylonStruct& tory)
 	tory.detectedDevices.clear();
 	tory.displayDevices.clear();
 	tory.controllers.clear();
-
-	//username
-	produceUsername(tory);
 
 	//device name
 	produceDeviceName(tory);
@@ -795,14 +799,10 @@ void produceTory(struct cylonStruct& tory)
 
 //Builders
 //build Tory
-/*
 struct cylonStruct buildTory()
 {
 	//Variable Declartion
 	struct cylonStruct tory;
-
-	//username
-	produceUsername(tory);
 
 	//device name
 	produceDeviceName(tory);
@@ -834,7 +834,7 @@ struct cylonStruct buildTory()
 //end build tory
 
 //build a storageStruct with given data
-
+/*
 struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, struct deviceStruct superDevice)
 {
 	//Variable declaration
@@ -1005,7 +1005,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	return device;
 }
 //END build device
-/*
+
 //builds a displayStruct from a given deviceStruct
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation)
 {
@@ -1211,7 +1211,6 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	return controller;
 }//END build controller
  //END Builders
- */
 
 void Centurion::Tory::grabUserInfo()
 {

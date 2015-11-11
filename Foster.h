@@ -36,9 +36,6 @@ std::wstring utf8_decode(const std::string &str);
 
 //Method Declaration:
 //Producers
-//for getting username
-void		produceUsername(struct cylonStruct& tf);
-
 //for getting time zone info
 void		produceTimeZone(struct cylonStruct& tf);
 
