@@ -682,7 +682,6 @@ void produceControllerInformation(struct cylonStruct& tf)
 //for logging
 void produceLog(struct cylonStruct& tf)
 {
-	
 	std::wostringstream os_;
 	os_ << "Cylon @: " << &tf << endl
 		<< "Username: " << utf8_decode(tf.username) << endl
@@ -741,7 +740,7 @@ void produceLog(struct cylonStruct& tf)
 			<< "\t" << "Left Thumb Y: " << iterator->thumbLeftY <<endl
 			<< "\t" << "Right Thumb X: " << iterator->thumbRightX <<endl
 			<< "\t" << "Right Thumb Y: " << iterator->thumbRightY << endl
-			<< "\t" << "Buttons: " << iterator->buttons << endl
+			<< "\t" << "Buttons: " << hex<< iterator->buttons << dec<<endl
 			<< endl
 			;
 	}
@@ -1367,29 +1366,87 @@ void updateControllers(struct cylonStruct& tf)
 
 		if (result == ERROR_SUCCESS)
 		{
+			//keep track of if we found the controller in the list
+			bool found = false;
+
 			//iterate over 
 			for (list<controllerStruct>::iterator iterator = tf.controllers.begin(), end = tf.controllers.end(); iterator != end; ++iterator)
 			{
+				//if the controller matches
+				if (iterator->userIndex == userIndex)
+				{
+					//controller match found in list
+					found = true;
 
-			}
+					//update the fields of the controller
+					//Normalize Trigger values
+					float oldTriggerMin = (float)0.0;
+					float oldTriggerMax = (float)255.0;
 
+					float newTriggerMin = (float)0.0;
+					float newTriggerMax = (float)1.0;
 
-			/*
-			//build device struct
-			struct deviceStruct device = buildDevice(deviceInfo, CONTROLLER_TYPE);
+					float newTriggerRange = (float)1.0;
+					float oldTriggerRange = (float)255.0;
 
-			//build controller struct
-			struct controllerStruct controller = buildController(device, state, userIndex);
+					float oldTriggerLeft = (float)state.Gamepad.bLeftTrigger;
+					float oldTriggerRight = (float)state.Gamepad.bRightTrigger;
 
-			//set controller index
-			controller.superDevice.controllerIndex = tf.controllers.size();
+					//Get/set new trigger values
+					iterator->leftTrigger = (float)((((oldTriggerLeft - oldTriggerMin) * newTriggerRange) / oldTriggerRange) + newTriggerMin);
+					iterator->rightTrigger = (float)((((oldTriggerRight - oldTriggerMin) * newTriggerRange) / oldTriggerRange) + newTriggerMin);
 
-			//insert into controllers
-			tf.controllers.insert(tf.controllers.end(), controller);
+					//Normalize thumbstick values
+					float oldThumbMin = (float)-32768.0;
+					float oldThumbMax = (float)32767.0;
 
-			//insert into devices
-			tf.detectedDevices.insert(tf.detectedDevices.end(), controller.superDevice);
-			*/
+					float newThumbMin = (float)-1.0;
+					float newThumbMax = (float)1.0;
+
+					float oldThumbRange = (float)(32767 + 32768);
+					float newThumbRange = (float)(2.0);
+
+					float oldThumbLeftX = (float)state.Gamepad.sThumbLX;
+					float oldThumbLeftY = (float)state.Gamepad.sThumbLY;
+					float oldThumbRightX = (float)state.Gamepad.sThumbRX;
+					float oldThumbRightY = (float)state.Gamepad.sThumbRY;
+
+					//Get/set new thumbstick values
+					iterator->thumbLeftX = (float)((((oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+					iterator->thumbLeftY = (float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+					iterator->thumbRightX = (float)((((oldThumbRightX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+					iterator->thumbRightY = (float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+
+					//Set properties
+					iterator->buttons = state.Gamepad.wButtons;
+					iterator->packetNumber = state.dwPacketNumber;
+				}//END if
+
+				//user index values should not repeat, so break
+				break;
+			}//END for
+
+			//if we still haven't found a controller with the appropriate user index
+			if (!found)
+			{
+				//build device struct
+				struct deviceStruct device = buildDevice(deviceInfo, CONTROLLER_TYPE);
+
+				//build controller struct
+				struct controllerStruct controller = buildController(device, state, userIndex);
+
+				//insert into controllers
+				tf.controllers.push_back(controller);
+
+				//set controller index
+				controller.superDevice.controllerIndex = tf.controllers.size() - 1;
+
+				//insert into devices
+				tf.detectedDevices.push_back(controller.superDevice);
+
+				//sync lists
+				tf.controllers.back().superDevice = tf.detectedDevices.back();
+			}//END if not found
 		}//END If controller connected
 		
 		else
