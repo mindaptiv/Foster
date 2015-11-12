@@ -181,3 +181,7 @@ namespace Centurion
 
 //sync a cylonStruct with a Tory 
 void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory);
+
+//For updating a cylonStruct
+void updateFoster(struct cylonStruct& tf);
+void updateControllers(struct cylonStruct& tf);

@@ -458,15 +458,20 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 			struct storageStruct storage = buildStorage(devices->GetAt(i), device);
 
 			//insert into storages
-			tf.storages.insert(tf.storages.end(), storage);
+			tf.storages.push_back(storage);
 
 			//set storage index of super
-			device.storageIndex = tf.storages.size();
+			device.storageIndex = tf.storages.size() - 1;
 		}
 
 		//put device in detectedDevices
-		tf.detectedDevices.insert(tf.detectedDevices.end(), device);
-		int one = 1;
+		tf.detectedDevices.push_back(device);
+
+		if (deviceStructType == STORAGE_TYPE)
+		{
+			//synchronize the list nodes
+			tf.storages.back().superDevice = tf.detectedDevices.back();
+		}
 	}//END FOR
 }//END produce device information
 
@@ -554,9 +559,10 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	*/
 
 	//Insert super/parent into devices lists
-	displayDevice.superDevice.displayIndex = tf.displayDevices.size();
-	tf.displayDevices.insert(tf.displayDevices.end(), displayDevice);
-	tf.detectedDevices.insert(tf.detectedDevices.end(), displayDevice.superDevice);
+	tf.displayDevices.push_back(displayDevice);
+	displayDevice.superDevice.displayIndex = tf.displayDevices.size() - 1;
+	tf.detectedDevices.push_back(displayDevice.superDevice);
+	tf.displayDevices.back().superDevice = tf.detectedDevices.back();
 }//END produceDisplayInformation
 
  //produces information about pointer devices
@@ -575,7 +581,7 @@ void produceMouseInformation(struct cylonStruct& tf)
 		mouse = buildDevice(deviceInfo, MOUSE_TYPE);
 
 		//insert mouse device into detectedDevices
-		tf.detectedDevices.insert(tf.detectedDevices.end(), mouse);
+		tf.detectedDevices.push_back(mouse);
 
 		//Populate mice variables
 		if (mouseStats.HorizontalWheelPresent == 1)
@@ -627,7 +633,7 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 		keyboard = buildDevice(deviceInfo, KEYBOARD_TYPE);
 
 		//insert keyboard device into detectedDevices
-		tf.detectedDevices.insert(tf.detectedDevices.end(), keyboard);
+		tf.detectedDevices.push_back(keyboard);
 	}//END if
 }
 //end produce Keyboard information
@@ -657,14 +663,17 @@ void produceControllerInformation(struct cylonStruct& tf)
 			//build controller struct
 			struct controllerStruct controller = buildController(device, state, userIndex);
 
-			//set controller index
-			controller.superDevice.controllerIndex = tf.controllers.size();
-
 			//insert into controllers
-			tf.controllers.insert(tf.controllers.end(), controller);
+			tf.controllers.push_back(controller);
+
+			//set controller index
+			controller.superDevice.controllerIndex = tf.controllers.size() - 1;
 
 			//insert into devices
-			tf.detectedDevices.insert(tf.detectedDevices.end(), controller.superDevice);
+			tf.detectedDevices.push_back(controller.superDevice);
+
+			//sync lists
+			tf.controllers.back().superDevice = tf.detectedDevices.back();
 		}//END If controller connected
 
 	}//END FOR
@@ -1332,3 +1341,61 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 		produceLog(tf);
 	}//END if info ready and not already copied
 }
+
+//For updating a cylonStruct
+void updateFoster(struct cylonStruct& tf)
+{
+
+}
+
+
+void updateControllers(struct cylonStruct& tf)
+{
+	//Variable Declaration
+	DWORD result;
+	XINPUT_STATE state;
+	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
+
+	//for plays 0-maxPlayerCount
+	for (DWORD userIndex = 0; userIndex < XUSER_MAX_COUNT; userIndex++)
+	{
+		//zero memory
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+		//Get state of controller
+		result = XInputGetState(userIndex, &state);
+
+		if (result == ERROR_SUCCESS)
+		{
+			//iterate over 
+			for (list<controllerStruct>::iterator iterator = tf.controllers.begin(), end = tf.controllers.end(); iterator != end; ++iterator)
+			{
+
+			}
+
+
+			/*
+			//build device struct
+			struct deviceStruct device = buildDevice(deviceInfo, CONTROLLER_TYPE);
+
+			//build controller struct
+			struct controllerStruct controller = buildController(device, state, userIndex);
+
+			//set controller index
+			controller.superDevice.controllerIndex = tf.controllers.size();
+
+			//insert into controllers
+			tf.controllers.insert(tf.controllers.end(), controller);
+
+			//insert into devices
+			tf.detectedDevices.insert(tf.detectedDevices.end(), controller.superDevice);
+			*/
+		}//END If controller connected
+		
+		else
+		{
+			//TODO: remove the controller and device from the lists
+
+		}
+	}//END FOR
+}//END update controllers
