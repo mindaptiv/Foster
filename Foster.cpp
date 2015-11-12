@@ -3,9 +3,6 @@
 //"Bad becomes good" - Tory Foster
 //josh@mindaptiv.com
 
-
-
-
 //includes
 #include "pch.h"  //TODO remove this if necessary for later deployments of Foster
 #include "Foster.h"
@@ -18,7 +15,6 @@ using namespace Windows::Foundation;
 using namespace Windows::System;
 using namespace Windows::Storage::Streams;
 using namespace concurrency;
-
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 #pragma comment(lib, "Ws2_32.lib")
@@ -254,7 +250,7 @@ void produceProcessorInfo(struct cylonStruct& tf)
 	tf.processorCount = (UINT64)sysinfo.dwNumberOfProcessors;
 
 	//set allocation granularity
-	tf.allocationGranularity = (uint32_t)sysinfo.dwAllocationGranularity; //TODO: Check this
+	tf.allocationGranularity = (uint32_t)sysinfo.dwAllocationGranularity;
 
 	//grab default minimum CPU hertz
 	tf.hertz = minHertzz;
@@ -458,9 +454,8 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		//if necessary, build a storage device
 		if (deviceStructType == STORAGE_TYPE)
 		{
-			//TODO: restore builder
 			//build storage device
-			struct storageStruct storage;// = buildStorage(devices->GetAt(i), device);
+			struct storageStruct storage = buildStorage(devices->GetAt(i), device);
 
 			//insert into storages
 			tf.storages.insert(tf.storages.end(), storage);
@@ -487,7 +482,6 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	produceDeviceTypeInformation(tf, "VideoCapture");
 	produceDeviceTypeInformation(tf, "PortableStorageDevice");
 
-	//TODO: restore producer calls
 
 	//Grab primary display device
 	produceDisplayInformation(tf);
@@ -679,6 +673,7 @@ void produceControllerInformation(struct cylonStruct& tf)
 //for logging
 void produceLog(struct cylonStruct& tf)
 {
+	
 	std::wostringstream os_;
 	os_ << "Cylon @: " << &tf << endl
 		<< "Username: " << utf8_decode(tf.username) << endl
@@ -737,6 +732,7 @@ void produceLog(struct cylonStruct& tf)
 			<< "\t" << "Left Thumb Y: " << iterator->thumbLeftY <<endl
 			<< "\t" << "Right Thumb X: " << iterator->thumbRightX <<endl
 			<< "\t" << "Right Thumb Y: " << iterator->thumbRightY << endl
+			<< "\t" << "Buttons: " << iterator->buttons << endl
 			<< endl
 			;
 	}
@@ -762,7 +758,7 @@ void produceLog(struct cylonStruct& tf)
 		<< "\t" << "Vertical Wheel: " << tf.mice.anyVerticalWheelPresent << endl
 		<< "\t" << "Horizontal Wheel: " << tf.mice.anyHorizontalWheelPresent << endl
 		<< "\t" << "Button Count: " << tf.mice.maxNumberOfButons << endl;
-
+	
 	OutputDebugStringW(os_.str().c_str());
 }//END produceLog
 
@@ -838,7 +834,6 @@ struct cylonStruct buildTory()
 //end build tory
 
 //build a storageStruct with given data
-/*
 struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, struct deviceStruct superDevice)
 {
 	//Variable declaration
@@ -848,11 +843,15 @@ struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformati
 	//Set parent paired deviceStruct
 	storage.superDevice = superDevice;
 
-	//get path
-	//NOTE: if not already noted in documentation, your package manifest requires access to Removable Storage for these next two lines to function!
-	Windows::Storage::StorageFolder^ folder = Windows::Devices::Portable::StorageDevice::FromId(deviceInfo->Id);
-	storage.path = utf8_encode(folder->Path->Data());
+	//TODO: remove this when restore proper path retrieval
+	storage.path = "0";
 
+	//get path
+	//TOOD: Restore this somehow?  Clearly have file in c:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\winrt\windows.devices.portable.h but compiler cannot resolve namespace
+	//NOTE: if not already noted in documentation, your package manifest requires access to Removable Storage for these next two lines to function!
+	//Windows::Storage::StorageFolder^ folder = Windows::Devices::Portable::StorageDevice::FromId(deviceInfo->Id);
+	//storage.path = utf8_encode(folder->Path->Data());
+	
 	//set unavailable fields
 	storage.bytesAvails = 0;
 	storage.totalBytes = 0;
@@ -861,8 +860,6 @@ struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformati
 	//return struct
 	return storage;
 }
-*/
-//TODO: restore all commented out producers
 
 //build a device struct with given data
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType)
@@ -1209,6 +1206,7 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	//Set properties
 	controller.superDevice = superDevice; //set parent
 	controller.userIndex = (unsigned int)userIndex;
+	
 	controller.buttons = state.Gamepad.wButtons;
 	controller.packetNumber = state.dwPacketNumber;
 
