@@ -100,7 +100,7 @@ static const int SENSOR_TYPE = 19;
 static const int BLUETOOTH_RADIO_TYPE = 20;
 
 //deviceStruct location
-static const int UNKNWON_PANEL_LOCATION = 0;
+static const int UNKNOWN_PANEL_LOCATION = 0;
 static const int FRONT_PANEL = 1;
 static const int BACK_PANEL = 2;
 static const int TOP_PANEL = 3;

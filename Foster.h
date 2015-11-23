@@ -23,7 +23,6 @@
 #include <ppltasks.h>
 #include <sstream>
 #include <Windows.h>
-
 using namespace Windows::Storage::Streams;
 
 //definitions
@@ -62,6 +61,7 @@ void		produceDisplayInformation(struct cylonStruct& tf);
 void		produceMouseInformation(struct cylonStruct& tf);
 void		produceKeyboardInformation(struct cylonStruct& tf);
 void		produceControllerInformation(struct cylonStruct& tf);
+void		produceGamepadInformation(struct cylonStruct& tf);
 
 //for logging
 void produceLog(struct cylonStruct& tf);
@@ -77,11 +77,17 @@ struct cylonStruct buildTory();
 //build a deviceStruct for a given DeviceInformation object
 struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, unsigned int deviceType);
 
+//build a deviceStruct for a given XINPUT controller
+struct deviceStruct buildDevice(uint32_t userIndex);
+
 //build a displayStruct for a given DisplayInformation object
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation);
 
 //build a controllerStruct for a given player number and XINPUT_STATE object
 struct controllerStruct buildController(struct deviceStruct, XINPUT_STATE state, DWORD userIndex);
+
+//build a controllerStruct for a given player number, deviceStruct, and GamepadReading
+struct controllerStruct buildController(struct deviceStruct superDevice, uint32_t userIndex, Windows::Gaming::Input::GamepadReading buttons);
 
 //build a storageStruct for a given DeviceInformation object
 struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformation^ deviceInfo, struct deviceStruct superDevice);
@@ -185,3 +191,7 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory);
 //For updating a cylonStruct
 void updateFoster(struct cylonStruct& tf);
 void updateControllers(struct cylonStruct& tf);
+void updateGamepadInformation(struct cylonStruct& tf);
+void updateControllerState(struct controllerStruct& controller, Windows::Gaming::Input::GamepadReading buttons);
+void OnGamepadAdded(_In_ Platform::Object^ sender, _In_ Windows::Gaming::Input::Gamepad^ gamepad);
+void OnGamepadRemoved(_In_ Platform::Object^ sender, _In_ Windows::Gaming::Input::Gamepad^ gamepad);

@@ -15,9 +15,23 @@ using namespace Windows::Foundation;
 using namespace Windows::System;
 using namespace Windows::Storage::Streams;
 using namespace concurrency;
+using namespace Windows::Gaming::Input;
 
 //If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
 #pragma comment(lib, "Ws2_32.lib")
+
+//Variables
+enum gamepadUpdatingState
+{
+	STARTED,
+	REMOVED,
+	ALL_REMOVED
+};
+bool controllersPurged;
+
+uint32_t presentGamepadsAdded;
+gamepadUpdatingState gamepadState;
+//END Variables
 
 //Method definitions:
 //build a message to be logged to debug
@@ -494,7 +508,7 @@ void produceDeviceTypesInformation(struct cylonStruct& tf)
 	//Grab Keyboard, Mouse, Controllers
 	produceKeyboardInformation(tf);
 	produceMouseInformation(tf);
-	produceControllerInformation(tf);
+	produceGamepadInformation(tf);
 
 	//Grab total count
 	tf.detectedDeviceCount = tf.detectedDevices.size();
@@ -644,7 +658,6 @@ void produceControllerInformation(struct cylonStruct& tf)
 	//Variable Declaration
 	DWORD result;
 	XINPUT_STATE state;
-	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
 
 	//for plays 0-maxPlayerCount
 	for (DWORD userIndex = 0; userIndex < XUSER_MAX_COUNT; userIndex++)
@@ -658,7 +671,7 @@ void produceControllerInformation(struct cylonStruct& tf)
 		if (result == ERROR_SUCCESS)
 		{
 			//build device struct
-			struct deviceStruct device = buildDevice(deviceInfo, CONTROLLER_TYPE);
+			struct deviceStruct device = buildDevice(userIndex);
 
 			//build controller struct
 			struct controllerStruct controller = buildController(device, state, userIndex);
@@ -678,6 +691,34 @@ void produceControllerInformation(struct cylonStruct& tf)
 
 	}//END FOR
 }//END produceControllerInfo
+
+void produceGamepadInformation(struct cylonStruct& tf)
+{
+	//Set State Trackers
+	gamepadState = STARTED;
+	presentGamepadsAdded = 0;
+	controllersPurged = false;
+
+	//Event handlers
+	Gamepad::GamepadAdded += ref new EventHandler<Gamepad^>(OnGamepadAdded);
+	Gamepad::GamepadRemoved += ref new EventHandler<Gamepad^>(OnGamepadRemoved);
+
+	for (uint32_t i = 0; i < Gamepad::Gamepads->Size; i++)
+	{
+		//GamepadReading
+		GamepadReading reading = Gamepad::Gamepads->GetAt(i)->GetCurrentReading();
+
+		//Build Device and Controller Structs
+		struct deviceStruct device = buildDevice(i);
+		struct controllerStruct controller = buildController(device, i, reading);
+		
+		//insert into lists an dsync
+		tf.controllers.push_back(controller);
+		controller.superDevice.controllerIndex = tf.controllers.size() - 1;
+		tf.detectedDevices.push_back(controller.superDevice);
+		tf.controllers.back().superDevice = tf.detectedDevices.back(); 
+	}//END for all gamepads 
+}//END produceGamepadInfo
 
 //for logging
 void produceLog(struct cylonStruct& tf)
@@ -797,7 +838,7 @@ void produceTory(struct cylonStruct& tory)
 	produceDeviceTypesInformation(tory);
 
 	//memory
-	produceMemoryInfo(tory); 
+	produceMemoryInfo(tory);
 
 	//log
 	produceLog(tory);
@@ -855,6 +896,7 @@ struct storageStruct buildStorage(Windows::Devices::Enumeration::DeviceInformati
 	storage.path = "0";
 
 	//get path
+	//TODO: try Ellen code as solution
 	//TOOD: Restore this somehow?  Clearly have file in c:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\winrt\windows.devices.portable.h but compiler cannot resolve namespace
 	//NOTE: if not already noted in documentation, your package manifest requires access to Removable Storage for these next two lines to function!
 	//Windows::Storage::StorageFolder^ folder = Windows::Devices::Portable::StorageDevice::FromId(deviceInfo->Id);
@@ -978,7 +1020,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 		else
 		{
 			//unknown or error
-			device.panelLocation = UNKNWON_PANEL_LOCATION;
+			device.panelLocation = UNKNOWN_PANEL_LOCATION;
 		}//END if panelLocation
 	}//end if enclosurelocation is null
 	else
@@ -1014,6 +1056,44 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	return device;
 }
 //END build device
+
+//build a deviceStruct for a given XINPUT controller
+struct deviceStruct buildDevice(uint32_t userIndex)
+{
+	//Variable Declaration
+	struct deviceStruct device;
+
+	//Set default/unavailable fields
+	device.panelLocation = UNKNOWN_PANEL_LOCATION;
+	device.inLid = 0;
+	device.inDock = 0;
+	device.isEnabled = 1;
+	device.orientation = NO_ROTATION;
+	device.vendorID = 0;
+	device.controllerIndex = 0;
+	device.displayIndex = 0;
+	device.sensorsIndex = 0;
+	device.storageIndex = 0;
+	
+	//Build custom name, allows for easier lookup later when devices disconnect
+	device.name = "XINPUT Controller #";
+	device.name += userIndex;
+	device.id = userIndex;
+	
+	//determine if default
+	if (userIndex == 0)
+	{
+		device.isDefault = 1;
+	}
+	else
+	{
+		device.isDefault = 0;
+	}//END if user is 0
+
+	//return
+	return device;
+}//END build controller device
+
 
 //builds a displayStruct from a given deviceStruct
 struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Graphics::Display::DisplayInformation^ displayInformation)
@@ -1167,6 +1247,35 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 }
 //END build display
 
+//build a controllerStruct for a given player number, deviceStruct, and GamepadReading
+struct controllerStruct buildController(struct deviceStruct superDevice, uint32_t userIndex, GamepadReading buttons)
+{
+	//Variable Declaration
+	struct controllerStruct controller;
+
+	//Get/set new trigger values
+	//TODO: change to float64?
+	controller.leftTrigger = (float)buttons.LeftTrigger;
+	controller.rightTrigger = (float)buttons.RightTrigger;
+
+	//Get/set new thumbstick values
+	controller.thumbLeftX = (float)buttons.LeftThumbstickX;
+	controller.thumbLeftY = (float)buttons.LeftThumbstickY;
+	controller.thumbRightX = (float)buttons.RightThumbstickX;
+	controller.thumbRightY = (float)buttons.RightThumbstickY;
+
+	//Set Buttons TODO add windows gaming constants
+	controller.buttons = 0;
+	updateControllerState(controller, buttons);
+
+	//Set Properties
+	controller.superDevice = superDevice;
+	controller.userIndex = userIndex;
+
+	//return controller
+	return controller;
+}//END builder
+
 //build a controllerStruct for a given player number and XINPUT_STATE object
 struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_STATE state, DWORD userIndex)
 {
@@ -1214,7 +1323,6 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	//Set properties
 	controller.superDevice = superDevice; //set parent
 	controller.userIndex = (unsigned int)userIndex;
-	
 	controller.buttons = state.Gamepad.wButtons;
 	controller.packetNumber = state.dwPacketNumber;
 
@@ -1286,7 +1394,6 @@ void Centurion::Tory::grabUserInfo()
 							{
 								if (stream != nullptr)
 								{
-									debug(stream->ContentType->Data());
 									PictureStream = stream;
 									IRandomAccessStreamWithContentType^* tempPic = &stream;
 									PictureLocation = (uintptr_t)tempPic;
@@ -1336,7 +1443,7 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 		//prevent further copying
 		tory->InfoCopied = true;
 
-		//print a new log TODO remove
+		//TODO: remove log
 		produceLog(tf);
 	}//END if info ready and not already copied
 }
@@ -1344,10 +1451,152 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 //For updating a cylonStruct
 void updateFoster(struct cylonStruct& tf)
 {
-
+	//TODO: add content
 }
 
+void updateControllerState(struct controllerStruct& controller, GamepadReading buttons)
+{
+	//Get/set new trigger values
+	//TODO: change to float64?
+	controller.leftTrigger = (float)buttons.LeftTrigger;
+	controller.rightTrigger = (float)buttons.RightTrigger;
 
+	//Get/set new thumbstick values
+	controller.thumbLeftX = (float)buttons.LeftThumbstickX;
+	controller.thumbLeftY = (float)buttons.LeftThumbstickY;
+	controller.thumbRightX = (float)buttons.RightThumbstickX;
+	controller.thumbRightY = (float)buttons.RightThumbstickY;
+
+	//Set Buttons TODO add windows gaming constants
+	controller.buttons = 0;
+	if (((int)buttons.Buttons & 0x4) == 0x4)
+	{
+		controller.buttons |= A_BUTTON;
+	}
+	else if ((controller.buttons & A_BUTTON) == A_BUTTON)
+	{
+		controller.buttons -= A_BUTTON;
+	}
+
+	if (((int)buttons.Buttons & 0x8) == 0x8)
+	{
+		controller.buttons |= B_BUTTON;
+	}
+	else if ((controller.buttons & B_BUTTON) == B_BUTTON)
+	{
+		controller.buttons -= B_BUTTON;
+	}
+
+	if (((int)buttons.Buttons & 0x10) == 0x10)
+	{
+		controller.buttons |= X_BUTTON;
+	}
+	else if ((controller.buttons & X_BUTTON) == X_BUTTON)
+	{
+		controller.buttons -= X_BUTTON;
+	}
+
+	if (((int)buttons.Buttons & 0x20) == 0x20)
+	{
+		controller.buttons |= Y_BUTTON;
+	}
+	else if ((controller.buttons & Y_BUTTON) == Y_BUTTON)
+	{
+		controller.buttons -= Y_BUTTON;
+	}
+
+	if (((int)buttons.Buttons & 0x1) == 0x1)
+	{
+		controller.buttons |= START_BUTTON;
+	}
+	else if ((controller.buttons & START_BUTTON) == START_BUTTON)
+	{
+		controller.buttons -= START_BUTTON;
+	}
+
+	if (((int)buttons.Buttons & 0x2) == 0x2)
+	{
+		controller.buttons |= SELECT_BUTTON;
+	}
+	else if ((controller.buttons & SELECT_BUTTON) == SELECT_BUTTON)
+	{
+		controller.buttons -= SELECT_BUTTON;
+	}
+
+	if (((int)buttons.Buttons & 0x1000) == 0x1000)
+	{
+		controller.buttons |= LEFT_THUMB;
+	}
+	else if ((controller.buttons & LEFT_THUMB) == LEFT_THUMB)
+	{
+		controller.buttons -= LEFT_THUMB;
+	}
+
+	if (((int)buttons.Buttons & 0x2000) == 0x2000)
+	{
+		controller.buttons |= RIGHT_THUMB;
+	}
+	else if ((controller.buttons & RIGHT_THUMB) == RIGHT_THUMB)
+	{
+		controller.buttons -= RIGHT_THUMB;
+	}
+
+	if (((int)buttons.Buttons & 0x400) == 0x400)
+	{
+		controller.buttons |= LEFT_SHOULDER;
+	}
+	else if ((controller.buttons & LEFT_SHOULDER) == LEFT_SHOULDER)
+	{
+		controller.buttons -= LEFT_SHOULDER;
+	}
+
+	if (((int)buttons.Buttons & 0x800) == 0x800)
+	{
+		controller.buttons |= RIGHT_SHOULDER;
+	}
+	else if ((controller.buttons & RIGHT_SHOULDER) == RIGHT_SHOULDER)
+	{
+		controller.buttons -= RIGHT_SHOULDER;
+	}
+
+	if (((int)buttons.Buttons & 0x40) == 0x40)
+	{
+		controller.buttons |= UP_DPAD;
+	}
+	else if ((controller.buttons & UP_DPAD) == UP_DPAD)
+	{
+		controller.buttons -= UP_DPAD;
+	}
+
+	if (((int)buttons.Buttons & 0x80) == 0x80)
+	{
+		controller.buttons |= DOWN_DPAD;
+	}
+	else if ((controller.buttons & DOWN_DPAD) == DOWN_DPAD)
+	{
+		controller.buttons -= DOWN_DPAD;
+	}
+
+	if (((int)buttons.Buttons & 0x100) == 0x100)
+	{
+		controller.buttons |= LEFT_DPAD;
+	}
+	else if ((controller.buttons & LEFT_DPAD) == LEFT_DPAD)
+	{
+		controller.buttons -= LEFT_DPAD;
+	}
+
+	if (((int)buttons.Buttons & 0x200) == 0x200)
+	{
+		controller.buttons |= RIGHT_DPAD;
+	}
+	else if ((controller.buttons & RIGHT_DPAD) == RIGHT_DPAD)
+	{
+		controller.buttons -= RIGHT_DPAD;
+	}
+}
+
+//For updating controllers via xinput
 void updateControllers(struct cylonStruct& tf)
 {
 	//Variable Declaration
@@ -1366,6 +1615,8 @@ void updateControllers(struct cylonStruct& tf)
 
 		if (result == ERROR_SUCCESS)
 		{
+			debug(L"Got state");
+
 			//keep track of if we found the controller in the list
 			bool found = false;
 
@@ -1420,10 +1671,9 @@ void updateControllers(struct cylonStruct& tf)
 					//Set properties
 					iterator->buttons = state.Gamepad.wButtons;
 					iterator->packetNumber = state.dwPacketNumber;
-				}//END if
-
-				//user index values should not repeat, so break
-				break;
+					//user index values should not repeat, so break
+					break;
+				}//END if match
 			}//END for
 
 			//if we still haven't found a controller with the appropriate user index
@@ -1437,12 +1687,14 @@ void updateControllers(struct cylonStruct& tf)
 
 				//insert into controllers
 				tf.controllers.push_back(controller);
+				debug(L"Controller Added");
 
 				//set controller index
 				controller.superDevice.controllerIndex = tf.controllers.size() - 1;
 
 				//insert into devices
 				tf.detectedDevices.push_back(controller.superDevice);
+				debug(L"Device Added");
 
 				//sync lists
 				tf.controllers.back().superDevice = tf.detectedDevices.back();
@@ -1451,8 +1703,134 @@ void updateControllers(struct cylonStruct& tf)
 		
 		else
 		{
+			debug(L"No state");
 			//TODO: remove the controller and device from the lists
+			//iterate over 
+			for (list<controllerStruct>::iterator iterator = tf.controllers.begin(), end = tf.controllers.end(); iterator != end; ++iterator)
+			{
+				//pick the right controller struct
+				if (iterator->userIndex == userIndex)
+				{
+					//build name of deviceStruct to look for
+					std::string deviceName = "XINPUT Controller #";
+					deviceName += (int)userIndex;
 
-		}
-	}//END FOR
+					//iterate over devices list
+					for (list<deviceStruct>::iterator iteratorDevices = tf.detectedDevices.begin(), end = tf.detectedDevices.end(); iteratorDevices != end; ++iteratorDevices)
+					{
+						//check to make sure the superDevice matches the deviceStruct in the detectedDevices list
+						if
+							(
+								(iterator->superDevice.name.compare(iteratorDevices->name) == 0) &&
+								(iteratorDevices->deviceType == CONTROLLER_TYPE)
+								//TODO: add id_int check later too
+								)
+						{
+							//remove the node and break
+							tf.detectedDevices.erase(iteratorDevices);
+							debug(L"Device Removed");
+							break;
+						}//END if devices match
+					}//END for all detectedDevices
+
+					//remove the controllerStruct from controllers and get out
+					tf.controllers.erase(iterator);
+					debug(L"Controller Removed");
+					break;
+				}//END if userIndex matches
+			}//END for all controllers
+
+		}//END if no controller detected for a given user index
+	}//END FOR all user index values
 }//END update controllers
+
+void updateGamepadInformation(struct cylonStruct& tf)
+{
+	//If a gamepad was removed, clear out the controllers 
+	if (((gamepadState == REMOVED) || (gamepadState == ALL_REMOVED)) && controllersPurged == false)
+	{
+		//prevent unnecssary multiple list traversals for each update call 
+		controllersPurged = true;
+
+		//purge the controllers from collected device lists
+		tf.controllers.clear();
+		for (list<deviceStruct>::iterator iterator = tf.detectedDevices.begin(), end = tf.detectedDevices.end(); iterator != end; ++iterator)
+		{
+			if (iterator->deviceType == CONTROLLER_TYPE)
+			{
+				tf.detectedDevices.erase(iterator);
+			}//END if controller
+		}//end detected devices iterator
+	}//end if gamepad removed
+	else if (gamepadState == STARTED)
+	{
+		//Grab controller info
+		for (uint32_t i = 0; i < Gamepad::Gamepads->Size; i++)
+		{
+			//Prepare flag
+			bool found = false;
+
+			//GamepadReading
+			GamepadReading reading = Gamepad::Gamepads->GetAt(i)->GetCurrentReading();
+
+			//iterate over controllers to determine if a gamepad already exists for this user index or if a new one was recently added
+			for (list<controllerStruct>::iterator iterator = tf.controllers.begin(), end = tf.controllers.end(); iterator != end; ++iterator)
+			{
+				if (iterator->userIndex == i)
+				{
+					//Set the flag
+					found = true;
+					
+					//Update the state of the controller
+					struct controllerStruct gamePad = (*iterator);
+					updateControllerState(gamePad, reading);
+					(*iterator) = gamePad;
+
+					break;
+				}//end if match
+			}//END for controllers
+
+			 //if no match found
+			if (!found)
+			{
+				//Build a new controller and device struct and insert them into the lists
+				//Build Device and Controller Structs
+				struct deviceStruct device = buildDevice(i);
+				struct controllerStruct controller = buildController(device, i, reading);
+
+				//insert into lists an dsync
+				tf.controllers.push_back(controller);
+				controller.superDevice.controllerIndex = tf.controllers.size() - 1;
+				tf.detectedDevices.push_back(controller.superDevice);
+				tf.controllers.back().superDevice = tf.detectedDevices.back();
+			}
+		}//END for all Gamepads
+	}//END else if
+}//END updater
+
+//Event listener for new gamepads
+void OnGamepadAdded(_In_ Object^ sender, _In_ Gamepad^ gamepad)
+{
+	presentGamepadsAdded++;
+
+	if ((presentGamepadsAdded == 1) && (gamepadState == ALL_REMOVED))
+	{
+		gamepadState = STARTED;
+		controllersPurged = false; //we now have controllers
+	}
+}//END OnGamepadAdded
+
+//Event listener for removed gamepads
+void OnGamepadRemoved(_In_ Object^ sender, _In_ Gamepad^ gamepad)
+{
+	presentGamepadsAdded--;
+
+	if (presentGamepadsAdded > 0)
+	{
+		gamepadState = REMOVED;
+	}
+	else if (presentGamepadsAdded == 0)
+	{
+		gamepadState = ALL_REMOVED;
+	}
+}//END OnGamepadRemoved
