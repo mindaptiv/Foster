@@ -95,10 +95,19 @@ static const int TOUCH_PAD_TYPE = 13;
 static const int TRACKBALL_TYPE = 14;
 static const int STYLUS_TYPE = 15;
 static const int POSITION_TYPE = 16;
-
+static const int HID_TYPE = 17;
 static const int RUMBLE_TYPE = 18;
 static const int SENSOR_TYPE = 19;
 static const int BLUETOOTH_RADIO_TYPE = 20;
+static const int PHYSICAL_TYPE = 21;
+static const int PRINTER_TYPE = 22;
+static const int HUB_TYPE = 23;
+static const int COMMUNICATIONS_DATA_TYPE = 24;
+static const int SMART_CARD_TYPE = 25;
+static const int CONTENT_SECURITY_TYPE = 26;
+static const int PERSONAL_HEALTHCARE_TYPE = 27;
+static const int BILLBOARD_TYPE = 28;
+static const int WIRELESS_PHONE_TYPE = 29;
 
 //deviceStruct location
 static const int UNKNOWN_PANEL_LOCATION = 0;
