@@ -154,6 +154,11 @@ struct displayStruct
 	uint32_t	currentRotation;
 	uint32_t	nativeRotation;
 	uint32_t	isStereoscopicEnabled;
+	uint32_t	horizontalResolution;
+	uint32_t	verticalResolution;
+	uint32_t	upperLeftX;
+	uint32_t	upperLeftY;
+	float		refreshRate;
 	float		resolutionScale;
 	float		logicalDPI;
 	float		rawDPIX;

@@ -1243,6 +1243,13 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 		displayDevice.resolutionScale = (float)0.0;
 	}
 
+	//set unavailable fields
+	displayDevice.horizontalResolution	= 0;
+	displayDevice.verticalResolution	= 0;
+	displayDevice.upperLeftX			= 0;
+	displayDevice.upperLeftY			= 0;
+	displayDevice.refreshRate			= 0.0;
+
 	//return
 	return displayDevice;
 }
