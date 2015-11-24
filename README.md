@@ -10,7 +10,11 @@ Foster is a UWP/Windows 10/Windows Store targeted library for gathering both use
 NOTE: Your App's package.appxmanifest file will need the Removable Storage option checked for this library to function properly.
 
 ##API Contracts Used
-Coming Soon!
+Foster makes use of the following UWP API contracts:
+ * Windows.Foundation.FoundationContract
+ * Windows.Foundation.UniversalApiContract
+ * Windows.UserProfile.UserProfileContract
+ * Windows.Devices.Portable.PortableDeviceContract
 
 ##Documentation
 For more detailed documentation visit www.github.com/mindaptiv/Foster/wiki
