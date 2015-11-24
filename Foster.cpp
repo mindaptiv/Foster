@@ -1477,7 +1477,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 
 	//Set Buttons TODO add windows gaming constants
 	controller.buttons = 0;
-	if (((int)buttons.Buttons & 0x4) == 0x4)
+	if ((buttons.Buttons & GamepadButtons::A) == GamepadButtons::A)
 	{
 		controller.buttons |= A_BUTTON;
 	}
@@ -1486,7 +1486,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= A_BUTTON;
 	}
 
-	if (((int)buttons.Buttons & 0x8) == 0x8)
+	if ((buttons.Buttons & GamepadButtons::B) == GamepadButtons::B)
 	{
 		controller.buttons |= B_BUTTON;
 	}
@@ -1495,7 +1495,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= B_BUTTON;
 	}
 
-	if (((int)buttons.Buttons & 0x10) == 0x10)
+	if ((buttons.Buttons & GamepadButtons::X) == GamepadButtons::X)
 	{
 		controller.buttons |= X_BUTTON;
 	}
@@ -1504,7 +1504,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= X_BUTTON;
 	}
 
-	if (((int)buttons.Buttons & 0x20) == 0x20)
+	if ((buttons.Buttons & GamepadButtons::Y) == GamepadButtons::Y)
 	{
 		controller.buttons |= Y_BUTTON;
 	}
@@ -1513,7 +1513,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= Y_BUTTON;
 	}
 
-	if (((int)buttons.Buttons & 0x1) == 0x1)
+	if ((buttons.Buttons & GamepadButtons::Menu) == GamepadButtons::Menu)
 	{
 		controller.buttons |= START_BUTTON;
 	}
@@ -1522,7 +1522,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= START_BUTTON;
 	}
 
-	if (((int)buttons.Buttons & 0x2) == 0x2)
+	if ((buttons.Buttons & GamepadButtons::View) == GamepadButtons::View)
 	{
 		controller.buttons |= SELECT_BUTTON;
 	}
@@ -1531,7 +1531,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= SELECT_BUTTON;
 	}
 
-	if (((int)buttons.Buttons & 0x1000) == 0x1000)
+	if ((buttons.Buttons & GamepadButtons::LeftThumbstick) == GamepadButtons::LeftThumbstick)
 	{
 		controller.buttons |= LEFT_THUMB;
 	}
@@ -1540,7 +1540,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= LEFT_THUMB;
 	}
 
-	if (((int)buttons.Buttons & 0x2000) == 0x2000)
+	if ((buttons.Buttons & GamepadButtons::RightThumbstick) == GamepadButtons::RightThumbstick)
 	{
 		controller.buttons |= RIGHT_THUMB;
 	}
@@ -1549,7 +1549,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= RIGHT_THUMB;
 	}
 
-	if (((int)buttons.Buttons & 0x400) == 0x400)
+	if ((buttons.Buttons & GamepadButtons::LeftShoulder) == GamepadButtons::LeftShoulder)
 	{
 		controller.buttons |= LEFT_SHOULDER;
 	}
@@ -1558,7 +1558,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= LEFT_SHOULDER;
 	}
 
-	if (((int)buttons.Buttons & 0x800) == 0x800)
+	if ((buttons.Buttons & GamepadButtons::RightShoulder) == GamepadButtons::RightShoulder)
 	{
 		controller.buttons |= RIGHT_SHOULDER;
 	}
@@ -1567,7 +1567,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= RIGHT_SHOULDER;
 	}
 
-	if (((int)buttons.Buttons & 0x40) == 0x40)
+	if ((buttons.Buttons & GamepadButtons::DPadUp) == GamepadButtons::DPadUp)
 	{
 		controller.buttons |= UP_DPAD;
 	}
@@ -1576,7 +1576,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= UP_DPAD;
 	}
 
-	if (((int)buttons.Buttons & 0x80) == 0x80)
+	if ((buttons.Buttons & GamepadButtons::DPadDown) == GamepadButtons::DPadDown)
 	{
 		controller.buttons |= DOWN_DPAD;
 	}
@@ -1585,7 +1585,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= DOWN_DPAD;
 	}
 
-	if (((int)buttons.Buttons & 0x100) == 0x100)
+	if ((buttons.Buttons & GamepadButtons::DPadLeft) == GamepadButtons::DPadLeft)
 	{
 		controller.buttons |= LEFT_DPAD;
 	}
@@ -1594,7 +1594,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 		controller.buttons -= LEFT_DPAD;
 	}
 
-	if (((int)buttons.Buttons & 0x200) == 0x200)
+	if ((buttons.Buttons & GamepadButtons::DPadRight) == GamepadButtons::DPadRight)
 	{
 		controller.buttons |= RIGHT_DPAD;
 	}
