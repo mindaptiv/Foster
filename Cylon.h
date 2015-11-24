@@ -116,6 +116,10 @@ static const int PORTRAIT = 2;
 static const int FLIPPED_LANDSCAPE = 4;
 static const int FLIPPED_PORTRAIT = 8;
 
+//error codes for error mask field
+static const int CONTROLLERS_LIST_ID_SYNCH_ERROR = 1; //failed to correctly synchronize data between the controller and detected Devices lists
+static const int INVALID_CONTROLLER_ID = 2; //retrieved a controller with a negative id or userIndex
+
 
 //support structure for cylonStruct for holding the properties of a given device in a single struct
 struct deviceStruct
