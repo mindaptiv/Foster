@@ -7,18 +7,14 @@
 #include "pch.h"
 #include "Foster.h"
 
+//Namespaces
 using namespace std;
 using namespace Platform;
-using namespace Platform::Collections;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Foundation;
 using namespace Windows::System;
-using namespace Windows::Storage::Streams;
 using namespace concurrency;
 using namespace Windows::Gaming::Input;
-
-//If Visual Studio freaks out about this code someday, add this line back in OR modify your project settings
-#pragma comment(lib, "Ws2_32.lib")
 
 //Variables
 enum gamepadUpdatingState
@@ -841,8 +837,8 @@ void produceTory(struct cylonStruct& tory)
 	//memory
 	produceMemoryInfo(tory);
 
-	//log
-	produceLog(tory);
+	//log - for debugging only
+	//produceLog(tory);
 }
 //end produce tory 
 //END producers
@@ -875,8 +871,8 @@ struct cylonStruct buildTory()
 	//memory
 	produceMemoryInfo(tory);
 
-	//log
-	produceLog(tory);
+	//log - for debugging only
+	//produceLog(tory);
 
 	//return
 	return tory;
