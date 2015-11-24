@@ -4,7 +4,7 @@
 //josh@mindaptiv.com
 
 //includes
-#include "pch.h"  //TODO remove this if necessary for later deployments of Foster
+#include "pch.h"
 #include "Foster.h"
 
 using namespace std;

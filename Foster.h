@@ -5,24 +5,16 @@
 
 //pragmas
 #pragma once
-#pragma comment(lib, "Xinput.lib")
 
 //includes
 #include "Cylon.h"
-#include <stdint.h>
-#include <stdio.h>
-#include <iostream>
-#include "Cybro.h"
 #include <collection.h>
-#include <limits.h>
 
 //includes for windows functionality
 #include <WinSock2.h>
 #include <Xinput.h>
-#include <windows.storage.h>
 #include <ppltasks.h>
 #include <sstream>
-#include <Windows.h>
 using namespace Windows::Storage::Streams;
 
 //definitions
