@@ -653,6 +653,7 @@ void produceKeyboardInformation(struct cylonStruct& tf)
 //end produce Keyboard information
 
 //grabs information for (up to) 4 XInput controllers
+//NOTE: can throw app-crashing exceptions when multiple gamepads are in use and disconnect in certain orders, use at your own risk!
 void produceControllerInformation(struct cylonStruct& tf)
 {
 	//Variable Declaration
@@ -1442,18 +1443,25 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 
 		//prevent further copying
 		tory->InfoCopied = true;
-
-		//TODO: remove log
-		produceLog(tf);
 	}//END if info ready and not already copied
 }
 
 //For updating a cylonStruct
-void updateFoster(struct cylonStruct& tf)
+void updateFoster(struct cylonStruct& tf, Centurion::Tory^ tory)
 {
-	//TODO: add content
+	//Synchronize with data grabbed by helper reference class
+	syncTory(tf, tory);
+
+	//Grab new gamepad info
+	updateGamepadInformation(tf);
+
+	//update machine state data
+	produceTimeZone(tf);
+	produceDateTime(tf);
+	produceMemoryInfo(tf);
 }
 
+//Update the buttons and axes of a given controller struct for a new reading
 void updateControllerState(struct controllerStruct& controller, GamepadReading buttons)
 {
 	//Get/set new trigger values
@@ -1597,6 +1605,7 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 }
 
 //For updating controllers via xinput
+//NOTE: can throw app-crashing exceptions when multiple gamepads are in use and disconnect in certain orders, use at your own risk!
 void updateControllers(struct cylonStruct& tf)
 {
 	//Variable Declaration

@@ -185,13 +185,11 @@ namespace Centurion
 	};
 }
 
-//sync a cylonStruct with a Tory 
-void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory);
-
 //For updating a cylonStruct
-void updateFoster(struct cylonStruct& tf);
+void updateFoster(struct cylonStruct& tf, Centurion::Tory^ tory);
 void updateControllers(struct cylonStruct& tf);
 void updateGamepadInformation(struct cylonStruct& tf);
 void updateControllerState(struct controllerStruct& controller, Windows::Gaming::Input::GamepadReading buttons);
+void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory);
 void OnGamepadAdded(_In_ Platform::Object^ sender, _In_ Windows::Gaming::Input::Gamepad^ gamepad);
 void OnGamepadRemoved(_In_ Platform::Object^ sender, _In_ Windows::Gaming::Input::Gamepad^ gamepad);
