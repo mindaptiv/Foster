@@ -183,6 +183,7 @@ struct controllerStruct
 	struct deviceStruct superDevice;
 
 	uint32_t userIndex; //player number 0-3
+	uint32_t id; //id number of controller (if applicable on platform, otherwise == userIndex)
 
 	//xinput state
 	uint32_t	packetNumber; //for detecting changes

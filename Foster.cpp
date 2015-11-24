@@ -1279,6 +1279,7 @@ struct controllerStruct buildController(struct deviceStruct superDevice, uint32_
 	//Set Properties
 	controller.superDevice = superDevice;
 	controller.userIndex = userIndex;
+	controller.id = userIndex;
 
 	//return controller
 	return controller;
@@ -1331,6 +1332,7 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 	//Set properties
 	controller.superDevice = superDevice; //set parent
 	controller.userIndex = (unsigned int)userIndex;
+	controller.id = userIndex;
 	controller.buttons = state.Gamepad.wButtons;
 	controller.packetNumber = state.dwPacketNumber;
 
