@@ -75,6 +75,7 @@ static const int LEFT_THUMB = 0x0040;
 static const int RIGHT_THUMB = 0x0080;
 static const int LEFT_SHOULDER = 0x0100;
 static const int RIGHT_SHOULDER = 0x0200;
+static const int HOME_BUTTON = 0x0400;
 
 //deviceStruct Types
 static const int ERROR_TYPE = 0;
@@ -165,9 +166,9 @@ struct controllerStruct
 
 	uint32_t userIndex; //player number 0-3
 
-						//xinput state
+	//xinput state
 	uint32_t	packetNumber; //for detecting changes
-	uint16_t	buttons; //bit mask for what buttons are pressed
+	uint32_t	buttons; //bit mask for what buttons are pressed
 	float		leftTrigger;
 	float		rightTrigger;
 	float		thumbLeftY;
