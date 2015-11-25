@@ -141,8 +141,11 @@ struct deviceStruct
 	uint32_t		isEnabled;			//if the device is enabled
 	uint32_t		orientation;		//orientation of the device
 	uint32_t		vendorID;			//vendor ID
+	uint32_t		usb_bus;			//usb bus, where available
+	uint32_t		udev_deviceNumber;	//usb device #, where available
 	std::string     name;
-	std::string		id;
+	std::string		id_string; //id in string format
+	uint32_t		id_int; //id in int format
 
 	//type
 	uint32_t				deviceType;
@@ -172,6 +175,7 @@ struct displayStruct
 	float		logicalDPI;
 	float		rawDPIX;
 	float		rawDPIY;
+	void*		driverData;
 	//unsigned char*  colorData;
 	//unsigned int	colorLength;
 };
@@ -296,7 +300,6 @@ struct cylonStruct
 	uint64_t					bytesAvails;
 
 	//account picture
-	//TODO add picture location from IStorageFile
 	std::string					pictureType;
 	std::string					picturePath;
 	uintptr_t					pictureLocation;

@@ -749,7 +749,7 @@ void produceLog(struct cylonStruct& tf)
 			<< "\t" << "Name: " << utf8_decode(iterator->name) << endl
 			<< "\t" << "Type: " << iterator->deviceType << endl
 			<< "\t" << "Vendor ID: " << endl
-			<< "\t" << "ID: " << utf8_decode(iterator->id) << endl
+			<< "\t" << "ID: " << utf8_decode(iterator->id_string) << endl
 			<< "\t" << "Orientation: " << iterator->orientation << endl
 			<< "\t" << "USB Bus: " << endl
 			<< "\t" << "UDev Device #: " << endl
@@ -926,13 +926,16 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	device.sensorsIndex = 0;
 	device.storageIndex = 0;
 	device.orientation = 0;
+	device.usb_bus = 0;
+	device.udev_deviceNumber = 0;
 
 	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == DISPLAY_TYPE || device.deviceType == KEYBOARD_TYPE || device.deviceType == MOUSE_TYPE || device.deviceType == CONTROLLER_TYPE)
 	{
 		//set errors/unknown values
 		device.name = utf8_encode(error);
-		device.id = utf8_encode(error);
+		device.id_string = utf8_encode(error);
+		device.id_int = 0;
 		device.inDock = false;
 		device.inLid = false;
 		device.panelLocation = 0;
@@ -958,11 +961,13 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 
 	if (deviceInfo->Id->IsEmpty())
 	{
-		device.id = utf8_encode(error);
+		device.id_string = utf8_encode(error);
+		device.id_int = 0;
 	}
 	else
 	{
-		device.id = utf8_encode(deviceInfo->Id->Data());
+		device.id_string = utf8_encode(deviceInfo->Id->Data());
+		device.id_int = 0;  //TODO: could make this a hash of the Data field used for id_string above?
 	}//END if ID Empty
 
 	if (deviceInfo->EnclosureLocation != nullptr)
@@ -1071,12 +1076,15 @@ struct deviceStruct buildDevice(uint32_t userIndex)
 	device.displayIndex = 0;
 	device.sensorsIndex = 0;
 	device.storageIndex = 0;
+	device.usb_bus = 0;
+	device.udev_deviceNumber = 0;
 	
 	//Build custom name, allows for easier lookup later when devices disconnect
 	device.name = "XINPUT Controller #";
 	device.name += userIndex;
-	device.id = userIndex;
-	
+	device.id_int = userIndex;
+	device.id_string = userIndex;
+
 	//determine if default
 	if (userIndex == 0)
 	{
@@ -1245,6 +1253,7 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 	displayDevice.upperLeftX			= 0;
 	displayDevice.upperLeftY			= 0;
 	displayDevice.refreshRate			= 0.0;
+	displayDevice.driverData			= nullptr;
 
 	//return
 	return displayDevice;
