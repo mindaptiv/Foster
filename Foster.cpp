@@ -1457,6 +1457,8 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 
 		//prevent further copying
 		tory->InfoCopied = true;
+
+		produceLog(tf);
 	}//END if info ready and not already copied
 }
 
