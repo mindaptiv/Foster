@@ -535,7 +535,7 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	displayDevice = buildDisplay(superDevice, displayInformation);
 
 	//TODO readd this later and test more extensively
-	/*
+	
 	//Get Color Profile
 	operation = displayInformation->GetColorProfileAsync();
 
@@ -555,18 +555,18 @@ void produceDisplayInformation(struct cylonStruct& tf)
 
 	if (reader != nullptr)
 	{
-	//read bytes
-	bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
-	reader->ReadBytes(bufferBytes);
-	displayDevice.colorData		= bufferBytes->Data;
-	displayDevice.colorLength	= bufferBytes->Length;
+		//read bytes
+		bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
+		reader->ReadBytes(bufferBytes);
+		displayDevice.colorData		= bufferBytes->Data;
+		displayDevice.colorLength	= bufferBytes->Length;
 	}
 	else
 	{
-	displayDevice.colorData		= (unsigned char*) "0";
-	displayDevice.colorLength	= 0;
+		displayDevice.colorData		= (unsigned char*) "0";
+		displayDevice.colorLength	= 0;
 	}
-	*/
+	
 
 	//Insert super/parent into devices lists
 	tf.displayDevices.push_back(displayDevice);

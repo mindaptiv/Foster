@@ -176,8 +176,8 @@ struct displayStruct
 	float		rawDPIX;
 	float		rawDPIY;
 	void* 		driverData;
-	//unsigned char*  colorData;
-	//unsigned int	colorLength;
+	unsigned char*  colorData;
+	unsigned int	colorLength;
 };
 //end displayStruct
 
