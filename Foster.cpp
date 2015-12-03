@@ -518,10 +518,6 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	//Variable Declaration
 	Windows::Graphics::Display::DisplayInformation^ displayInformation;
 	Windows::Devices::Enumeration::DeviceInformation^ deviceInfo;
-	Windows::Foundation::IAsyncOperation<Windows::Storage::Streams::IRandomAccessStream^>^ operation;
-	Windows::Storage::Streams::IRandomAccessStream^ resultStream;
-	Windows::Storage::Streams::DataReader^ reader;
-	Platform::Array<byte>^ bufferBytes;
 	struct displayStruct displayDevice;
 	struct deviceStruct  superDevice;
 
@@ -532,41 +528,7 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	displayInformation = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
 
 	//Build display device
-	displayDevice = buildDisplay(superDevice, displayInformation);
-
-	//TODO readd this later and test more extensively
-	
-	//Get Color Profile
-	operation = displayInformation->GetColorProfileAsync();
-
-	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
-	{
-	//WAIT, YO
-	}
-	resultStream = operation->GetResults();
-	operation->Close();
-
-	reader = ref new Windows::Storage::Streams::DataReader(resultStream);
-	Windows::Storage::Streams::DataReaderLoadOperation^ readOperation = reader->LoadAsync(static_cast<unsigned int>(resultStream->Size));
-	while (readOperation->Status == Windows::Foundation::AsyncStatus::Started)
-	{
-	//WAIT, YO
-	}
-
-	if (reader != nullptr)
-	{
-		//read bytes
-		bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
-		reader->ReadBytes(bufferBytes);
-		displayDevice.colorData		= bufferBytes->Data;
-		displayDevice.colorLength	= bufferBytes->Length;
-	}
-	else
-	{
-		displayDevice.colorData		= (unsigned char*) "0";
-		displayDevice.colorLength	= 0;
-	}
-	
+	displayDevice = buildDisplay(superDevice, displayInformation);	
 
 	//Insert super/parent into devices lists
 	tf.displayDevices.push_back(displayDevice);
@@ -795,6 +757,7 @@ void produceLog(struct cylonStruct& tf)
 			<< "\t" << "Logical DPI: " << iterator->logicalDPI << endl
 			<< "\t" << "Raw DPI X: " << iterator->rawDPIX << endl
 			<< "\t" << "Raw DPI Y: " << iterator->rawDPIY << endl
+			<< "\t" << "Color Profile Buffer Size: " << iterator->colorLength << endl
 			<< endl
 			;
 	}
@@ -1105,6 +1068,10 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 {
 	//Variable Declaration
 	struct displayStruct displayDevice;
+	Windows::Foundation::IAsyncOperation<Windows::Storage::Streams::IRandomAccessStream^>^ operation;
+	Windows::Storage::Streams::IRandomAccessStream^ resultStream;
+	Windows::Storage::Streams::DataReader^ reader;
+	Platform::Array<byte>^ bufferBytes;
 
 	//Set parent struct
 	displayDevice.superDevice = superDevice;
@@ -1246,6 +1213,38 @@ struct displayStruct buildDisplay(struct deviceStruct superDevice, Windows::Grap
 		//error case
 		displayDevice.resolutionScale = (float)0.0;
 	}
+
+	//Get Color Profile
+	operation = displayInformation->GetColorProfileAsync();
+
+	while (operation->Status == Windows::Foundation::AsyncStatus::Started)
+	{
+		//WAIT, YO
+	}
+	resultStream = operation->GetResults();
+	operation->Close();
+
+	reader = ref new Windows::Storage::Streams::DataReader(resultStream);
+	Windows::Storage::Streams::DataReaderLoadOperation^ readOperation = reader->LoadAsync(static_cast<unsigned int>(resultStream->Size));
+	while (readOperation->Status == Windows::Foundation::AsyncStatus::Started)
+	{
+		//WAIT, YO
+	}
+
+	if (reader != nullptr)
+	{
+		//read bytes
+		bufferBytes = ref new Platform::Array<byte>(reader->UnconsumedBufferLength);
+		reader->ReadBytes(bufferBytes);
+		displayDevice.colorData = bufferBytes->Data;
+		displayDevice.colorLength = bufferBytes->Length;
+	}
+	else
+	{
+		displayDevice.colorData = (unsigned char*) "0";
+		displayDevice.colorLength = 0;
+	}
+
 
 	//set unavailable fields
 	displayDevice.horizontalResolution	= 0;
@@ -1458,7 +1457,8 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 		//prevent further copying
 		tory->InfoCopied = true;
 
-		produceLog(tf);
+		//for debugging only
+		//produceLog(tf);
 	}//END if info ready and not already copied
 }
 
