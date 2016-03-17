@@ -1279,9 +1279,9 @@ struct controllerStruct buildController(struct deviceStruct superDevice, uint32_
 
 	//Get/set new thumbstick values
 	controller.thumbLeftX = (float)buttons.LeftThumbstickX;
-	controller.thumbLeftY = (float)buttons.LeftThumbstickY;
+	controller.thumbLeftY = -(float)buttons.LeftThumbstickY; //reverse to match w/ SDL2 and Android API standards
 	controller.thumbRightX = (float)buttons.RightThumbstickX;
-	controller.thumbRightY = (float)buttons.RightThumbstickY;
+	controller.thumbRightY = -(float)buttons.RightThumbstickY; //reverse to match w/ SDL2 and Android API standards
 
 	//Set Buttons TODO add windows gaming constants
 	controller.buttons = 0;
@@ -1336,9 +1336,9 @@ struct controllerStruct buildController(struct deviceStruct superDevice, XINPUT_
 
 	//Get/set new thumbstick values
 	controller.thumbLeftX = (float)((((oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
-	controller.thumbLeftY = (float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+	controller.thumbLeftY = -(float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin); //reverse to match w/ SDL2 and Android API standards
 	controller.thumbRightX = (float)((((oldThumbRightX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
-	controller.thumbRightY = (float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+	controller.thumbRightY = -(float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin); //reverse to match w/ SDL2 and Android API standards
 
 	//Set properties
 	controller.superDevice = superDevice; //set parent
@@ -1494,9 +1494,9 @@ void updateControllerState(struct controllerStruct& controller, GamepadReading b
 
 	//Get/set new thumbstick values
 	controller.thumbLeftX = (float)buttons.LeftThumbstickX;
-	controller.thumbLeftY = (float)buttons.LeftThumbstickY;
+	controller.thumbLeftY = -(float)buttons.LeftThumbstickY; //reverse to match w/ SDL2 and Android API standards
 	controller.thumbRightX = (float)buttons.RightThumbstickX;
-	controller.thumbRightY = (float)buttons.RightThumbstickY;
+	controller.thumbRightY = -(float)buttons.RightThumbstickY; //reverse to match w/ SDL2 and Android API standards
 
 	//Set Buttons TODO add windows gaming constants
 	controller.buttons = 0;
@@ -1696,9 +1696,9 @@ void updateControllers(struct cylonStruct& tf)
 
 					//Get/set new thumbstick values
 					iterator->thumbLeftX = (float)((((oldThumbLeftX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
-					iterator->thumbLeftY = (float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+					iterator->thumbLeftY = -(float)((((oldThumbLeftY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin); //reverse to match w/ SDL2 and Android API standards
 					iterator->thumbRightX = (float)((((oldThumbRightX - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
-					iterator->thumbRightY = (float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin);
+					iterator->thumbRightY = -(float)((((oldThumbRightY - oldThumbMin) * newThumbRange) / oldThumbRange) + newThumbMin); //reverse to match w/ SDL2 and Android API standards
 
 					//Set properties
 					iterator->buttons = state.Gamepad.wButtons;
