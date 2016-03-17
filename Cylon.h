@@ -1,4 +1,4 @@
-//Cylon.h
+//Cylon.h 
 //Gives definition for cylonStruct and its supporting structures for use with Saul and other Final Five services.
 //"By your command," - Cylon Centurion
 //josh@mindaptiv.com
@@ -77,6 +77,7 @@ static const int LEFT_SHOULDER = 0x0100;
 static const int RIGHT_SHOULDER = 0x0200;
 static const int HOME_BUTTON = 0x0400;
 
+
 //deviceStruct Types
 static const int ERROR_TYPE = 0;
 static const int GENERIC_TYPE = 1;
@@ -108,7 +109,7 @@ static const int CONTENT_SECURITY_TYPE = 26;
 static const int PERSONAL_HEALTHCARE_TYPE = 27;
 static const int BILLBOARD_TYPE = 28;
 static const int WIRELESS_PHONE_TYPE = 29;
-
+static const int MIDI_TYPE = 30;
 
 //deviceStruct location
 static const int UNKNOWN_PANEL_LOCATION = 0;
@@ -126,6 +127,13 @@ static const int PORTRAIT = 2;
 static const int FLIPPED_LANDSCAPE = 4;
 static const int FLIPPED_PORTRAIT = 8;
 
+//midi constants
+static const int MIDI_VIRTUAL = 0;
+static const int MIDI_USB = 1;
+static const int MIDI_BLUETOOTH = 2;
+static const int MIDI_IN = 0;
+static const int MIDI_OUT = 1;
+
 //error codes
 static const int CONTROLLERS_LIST_ID_SYNCH_ERROR = 1; //failed to correctly synchronize data between the controllers and detectedDevices lists
 static const int INVALID_CONTROLLER_ID = 2; //failed to correctly get the ID of a controller device
@@ -135,7 +143,7 @@ struct deviceStruct
 {
 	//NOTE: Values of 0 are errors for non-bools
 	uint32_t		panelLocation;		//devices panel location on the physical computer
-	uint32_t		inLid;				//if the device is located in the lid of the computer
+	uint32_t		inLid;				//if the device is located in the lid of the computer 
 	uint32_t		inDock;				//if the device is in the docking station of the computer
 	uint32_t		isDefault;			//if device is the default for its function
 	uint32_t		isEnabled;			//if the device is enabled
@@ -143,9 +151,9 @@ struct deviceStruct
 	uint32_t		vendorID;			//vendor ID
 	std::string     name;
 	std::string		id_string;			//id in string format
-	uint32_t		id_int;				//id in integer format
-	uint32_t		usb_bus;			//usb bus, where available
-	uint32_t		udev_deviceNumber;	//usb device #, where available
+	uint32_t 		id_int;				//id in integer format
+	uint32_t 		usb_bus;			//usb bus, where available
+	uint32_t 		udev_deviceNumber;	//usb device #, where available
 
 										//type
 	uint32_t				deviceType;
@@ -153,6 +161,7 @@ struct deviceStruct
 	uint32_t				controllerIndex; //device's index in the pointerDevices list if type is 9
 	uint32_t				storageIndex;
 	uint32_t				sensorsIndex;
+	uint32_t 				midiIndex; //device's index in the midiDevices list if type is 30
 
 };
 //END deviceStruct
@@ -161,21 +170,22 @@ struct deviceStruct
 struct displayStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
+	uint32_t 	deviceIndex;
 
 	uint32_t	rotationPreference;
 	uint32_t	currentRotation;
 	uint32_t	nativeRotation;
 	uint32_t	isStereoscopicEnabled;
-	uint32_t	horizontalResolution;
-	uint32_t	verticalResolution;
-	uint32_t	upperLeftX;
-	uint32_t	upperLeftY;
+	uint32_t 	horizontalResolution;
+	uint32_t 	verticalResolution;
+	uint32_t 	upperLeftX;
+	uint32_t 	upperLeftY;
 	float		refreshRate;
 	float		resolutionScale;
 	float		logicalDPI;
 	float		rawDPIX;
 	float		rawDPIY;
-	void* 		driverData;
+	void*		driverData;
 	unsigned char*  colorData;
 	unsigned int	colorLength;
 };
@@ -185,13 +195,13 @@ struct displayStruct
 struct controllerStruct
 {
 	struct deviceStruct superDevice;
-
+	uint32_t deviceIndex;
 	uint32_t userIndex; //player number 0-3
 	uint32_t id;	//id number of controller (if applicable on platform, otherwise == userIndex)
 
 					//xinput state
-	uint32_t	packetNumber; 	//for detecting changes
-	uint32_t	buttons; 		//bit mask for what buttons are pressed
+	uint32_t	packetNumber; //for detecting changes
+	uint32_t	buttons; //bit mask for what buttons are pressed
 	float		leftTrigger;
 	float		rightTrigger;
 	float		thumbLeftY;
@@ -205,8 +215,9 @@ struct controllerStruct
 struct mouseStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
+	uint32_t 	deviceIndex;
 
-									 //properties of available mice
+	//properties of available mice
 	uint32_t anyLeftRightSwapped;
 	uint32_t anyVerticalWheelPresent;
 	uint32_t anyHorizontalWheelPresent;
@@ -218,8 +229,9 @@ struct mouseStruct
 struct sensorStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
+	uint32_t 	deviceIndex;
 
-									 //data from Android 16+
+	//data from Android 16+
 	uint32_t minDelay;
 	uint32_t type; //based on Android Sensor class type mappings
 	uint32_t version;
@@ -246,8 +258,9 @@ struct sensorStruct
 struct storageStruct
 {
 	struct deviceStruct superDevice; //parent deviceStruct object
+	uint32_t 	deviceIndex;
 
-									 //Path to access the storage device in the file system
+	//Path to access the storage device in the file system
 	std::string path;
 
 	//Space
@@ -256,6 +269,36 @@ struct storageStruct
 
 	//Emulated Storage?
 	uint32_t isEmulated;
+};
+
+//struct for representing a MIDI port
+struct midiPortStruct
+{
+	std::string name;
+	uint32_t number;
+	uint32_t type; //IN = 0, OUT = 1
+};
+
+//struct for representing a MIDI device
+struct midiStruct
+{
+	struct deviceStruct superDevice; //parent deviceStruct object
+	uint32_t 	deviceIndex;
+
+	uint32_t id;
+	uint32_t type; //virtual = 0, usb = 1, bluetooth = 2
+
+				   //Ports
+	uint32_t outCount;
+	uint32_t inCount;
+	std::list<struct midiPortStruct> ports;
+
+	//String names and numbers
+	std::string vendorName;
+	std::string deviceName;
+	std::string productName;
+	std::string versionNumber;
+	std::string serialNumber;
 };
 
 //struct definition for storing user and system data from a WinRT based machine for later use
@@ -318,6 +361,7 @@ struct cylonStruct
 	std::list<struct controllerStruct> controllers;
 	std::list<struct sensorStruct> sensors;
 	std::list<struct storageStruct> storages;
+	std::list<struct midiStruct> midiDevices;
 	struct mouseStruct mice;
 
 	//error

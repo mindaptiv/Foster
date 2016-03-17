@@ -481,6 +481,7 @@ void produceDeviceTypeInformation(struct cylonStruct& tf, std::string type)
 		{
 			//synchronize the list nodes
 			tf.storages.back().superDevice = tf.detectedDevices.back();
+			tf.storages.back().deviceIndex = tf.detectedDevices.size() - 1;
 		}
 	}//END FOR
 }//END produce device information
@@ -535,6 +536,7 @@ void produceDisplayInformation(struct cylonStruct& tf)
 	displayDevice.superDevice.displayIndex = tf.displayDevices.size() - 1;
 	tf.detectedDevices.push_back(displayDevice.superDevice);
 	tf.displayDevices.back().superDevice = tf.detectedDevices.back();
+	tf.displayDevices.back().deviceIndex = tf.detectedDevices.size() - 1;
 }//END produceDisplayInformation
 
  //produces information about pointer devices
@@ -554,6 +556,7 @@ void produceMouseInformation(struct cylonStruct& tf)
 
 		//insert mouse device into detectedDevices
 		tf.detectedDevices.push_back(mouse);
+		tf.mice.deviceIndex = tf.detectedDevices.size() - 1;
 
 		//Populate mice variables
 		if (mouseStats.HorizontalWheelPresent == 1)
@@ -646,6 +649,7 @@ void produceControllerInformation(struct cylonStruct& tf)
 
 			//sync lists
 			tf.controllers.back().superDevice = tf.detectedDevices.back();
+			tf.controllers.back().deviceIndex = tf.detectedDevices.size() - 1;
 		}//END If controller connected
 
 	}//END FOR
@@ -676,6 +680,7 @@ void produceGamepadInformation(struct cylonStruct& tf)
 		controller.superDevice.controllerIndex = tf.controllers.size() - 1;
 		tf.detectedDevices.push_back(controller.superDevice);
 		tf.controllers.back().superDevice = tf.detectedDevices.back(); 
+		tf.controllers.back().deviceIndex = tf.detectedDevices.size() - 1;
 	}//END for all gamepads 
 }//END produceGamepadInfo
 
@@ -891,6 +896,7 @@ struct deviceStruct buildDevice(Windows::Devices::Enumeration::DeviceInformation
 	device.orientation = 0;
 	device.usb_bus = 0;
 	device.udev_deviceNumber = 0;
+	device.midiIndex = 0;
 
 	//get out for display/keyboard/mouse/controller devices, as they have different metadata than the regular kind we retrieve
 	if (device.deviceType == DISPLAY_TYPE || device.deviceType == KEYBOARD_TYPE || device.deviceType == MOUSE_TYPE || device.deviceType == CONTROLLER_TYPE)
@@ -1041,6 +1047,7 @@ struct deviceStruct buildDevice(uint32_t userIndex)
 	device.storageIndex = 0;
 	device.usb_bus = 0;
 	device.udev_deviceNumber = 0;
+	device.midiIndex = 0;
 	
 	//Build custom name, allows for easier lookup later when devices disconnect
 	device.name = "XINPUT Controller #";
@@ -1458,7 +1465,7 @@ void syncTory(struct cylonStruct& tf, Centurion::Tory^ tory)
 		tory->InfoCopied = true;
 
 		//for debugging only
-		//produceLog(tf);
+		produceLog(tf);
 	}//END if info ready and not already copied
 }
 
@@ -1723,6 +1730,7 @@ void updateControllers(struct cylonStruct& tf)
 
 				//sync lists
 				tf.controllers.back().superDevice = tf.detectedDevices.back();
+				tf.controllers.back().deviceIndex = tf.detectedDevices.size() - 1;
 			}//END if not found
 		}//END If controller connected
 		
@@ -1828,6 +1836,7 @@ void updateGamepadInformation(struct cylonStruct& tf)
 				controller.superDevice.controllerIndex = tf.controllers.size() - 1;
 				tf.detectedDevices.push_back(controller.superDevice);
 				tf.controllers.back().superDevice = tf.detectedDevices.back();
+				tf.controllers.back().deviceIndex = tf.detectedDevices.size() - 1;
 			}
 		}//END for all Gamepads
 	}//END else if
